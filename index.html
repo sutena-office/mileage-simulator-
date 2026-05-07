@@ -18,8 +18,8 @@
   .hero h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.4rem; letter-spacing: 0.05em; }
   .hero p { font-size: 0.9rem; opacity: 0.85; margin-bottom: 1.8rem; }
 
-  .search-box { max-width: 600px; margin: 0 auto; }
-  .search-input-wrap { position: relative; }
+  .search-box { max-width: 600px; width: 100%; margin: 0 auto; box-sizing: border-box; }
+  .search-input-wrap { position: relative; width: 100%; box-sizing: border-box; }
   .search-box input { width: 100%; padding: 1rem 1.2rem 1rem 3rem; border-radius: 12px; border: none; font-size: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); outline: none; -webkit-appearance: none; touch-action: manipulation; }
   .search-btn { display: block; width: 100%; margin-top: 0.6rem; background: #2b6cb0; color: white; border: none; border-radius: 10px; padding: 0.8rem 1.2rem; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background 0.2s; min-height: 52px; touch-action: manipulation; }
   .search-btn:hover { background: #1a4e8a; }
@@ -102,8 +102,18 @@
       background:
         linear-gradient(rgba(0,0,0,0.48), rgba(0,0,0,0.48)),
         url('hero-square.jpg') center/cover no-repeat;
+      padding: 2rem 0.75rem 2.5rem; /* 左右paddingを狭めて検索欄を広く */
     }
     .hero h1 { font-size: 1.4rem; }
+    .search-box { width: 100%; max-width: 100%; }
+    .search-input-wrap { width: 100%; }
+    .search-box input {
+      width: 100%;
+      min-height: 52px;
+      font-size: 16px; /* iOSズーム防止 */
+      box-sizing: border-box;
+    }
+    .search-btn { min-height: 52px; font-size: 1rem; }
     .miles-grid { grid-template-columns: repeat(2, 1fr); }
     .cash-row { gap: 0.8rem; }
   }
