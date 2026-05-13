@@ -664,11 +664,21 @@ const suggestList = document.getElementById('suggestList');
 
 searchInput.addEventListener('input', () => {
   const q = searchInput.value.trim();
+
+  // 入力が変わったら選択をリセット（再検索バグ修正）
+  if (selectedCity && q !== selectedCity) {
+    selectedCity = null;
+    document.getElementById('searchBtn').disabled = true;
+  }
+
   if (!q) { suggestList.classList.add('hidden'); return; }
+  const qUp = q.toUpperCase();
   const matches = allCities.filter(c => {
     if (c.includes(q)) return true;
     const info = cityMap[c];
-    return info.country && info.country.includes(q);
+    if (info.country && info.country.includes(q)) return true;
+    // 空港コードでも検索（例: HNL, NRT, LAX）
+    return [...info.airports].some(a => a && a !== 'NaN' && !a.startsWith('Zone') && a.toUpperCase().includes(qUp));
   }).slice(0, 20);
   if (!matches.length) { suggestList.classList.add('hidden'); return; }
   suggestList.innerHTML = matches.map(c => {
@@ -736,50 +746,78 @@ document.getElementById('dirFilter').addEventListener('click', e => {
 });
 
 // ─── 予約サイトURL ────────────────────────────────────────────────
+// ANA/JAL自社便用（発券はANA/JALサイト）
 const BOOKING_URLS = {
-  'ANA':               'https://www.ana.co.jp/',
-  'JAL':               'https://www.jal.co.jp/',
-  'ANAマイル':         'https://www.ana.co.jp/',
-  'JALマイル':         'https://www.jal.co.jp/',
-  // Amex転送 マイルプログラム名
-  'MileagePlus':       'https://www.united.com/ja/jp/',
-  'SkyMiles':          'https://ja.delta.com/',
-  'KrisFlyer':         'https://www.singaporeair.com/ja_JP/jp/',
-  'Flying Blue':       'https://wwws.airfrance.co.jp/',
-  'Miles&Smiles':      'https://www.turkishairlines.com/ja-jp/',
-  'Miles & More':      'https://www.miles-and-more.com/row/ja/',
-  'Asia Miles':        'https://www.cathaypacific.com/cx/ja_JP/',
-  'Etihad Guest':      'https://www.etihad.com/ja-ae/',
-  'Privilege Club':    'https://www.qatarairways.com/ja-jp/',
-  'AAdvantage':        'https://www.aa.com/',
-  'Avios':             'https://www.britishairways.com/en-gb/',
-  'Royal Orchid Plus': 'https://www.thaiairways.com/ja/',
+  'ANA':     'https://www.ana.co.jp/',
+  'JAL':     'https://www.jal.co.jp/',
+  'ANAマイル': 'https://www.ana.co.jp/',
+  'JALマイル': 'https://www.jal.co.jp/',
+};
+// マイルプログラム名 → 航空会社トップ
+const PROGRAM_URLS = {
+  'MileagePlus':           'https://www.united.com/ja/jp/',
+  'SkyMiles':              'https://ja.delta.com/',
+  'KrisFlyer':             'https://www.singaporeair.com/ja_JP/jp/',
+  'Flying Blue':           'https://wwws.airfrance.co.jp/',
+  'Miles&Smiles':          'https://www.turkishairlines.com/ja-jp/',
+  'Miles & More':          'https://www.miles-and-more.com/row/ja/',
+  'Asia Miles':            'https://www.cathaypacific.com/cx/ja_JP/',
+  'Etihad Guest':          'https://www.etihad.com/ja-ae/',
+  'Privilege Club':        'https://www.qatarairways.com/ja-jp/',
+  'AAdvantage':            'https://www.aa.com/',
+  'Avios':                 'https://www.britishairways.com/en-gb/',
+  'Royal Orchid Plus':     'https://www.thaiairways.com/ja/',
   'Infinity MileageLands': 'https://www.evaair.com/ja-jp/',
 };
+// 航空会社名（日本語）→ 各社トップ
+const AIRLINE_URLS = [
+  [['ユナイテッド','United'],         'https://www.united.com/ja/jp/'],
+  [['デルタ','Delta'],               'https://ja.delta.com/'],
+  [['ハワイアン','Hawaiian'],         'https://www.hawaiianairlines.co.jp/'],
+  [['アラスカ','Alaska'],             'https://www.alaskaair.com/'],
+  [['シンガポール','Singapore'],      'https://www.singaporeair.com/ja_JP/jp/'],
+  [['エールフランス','Air France'],   'https://wwws.airfrance.co.jp/'],
+  [['KLM'],                          'https://www.klm.com/ja-jp'],
+  [['ターキッシュ','Turkish'],        'https://www.turkishairlines.com/ja-jp/'],
+  [['ルフトハンザ','Lufthansa'],      'https://www.lufthansa.com/jp/ja/'],
+  [['スイス','Swiss'],               'https://www.swiss.com/jp/ja/'],
+  [['オーストリア','Austrian'],       'https://www.austrian.com/jp/ja/'],
+  [['カセイ','Cathay'],               'https://www.cathaypacific.com/cx/ja_JP/'],
+  [['エティハド','Etihad'],           'https://www.etihad.com/ja-ae/'],
+  [['カタール','Qatar'],              'https://www.qatarairways.com/ja-jp/'],
+  [['アメリカン','American'],         'https://www.aa.com/'],
+  [['ブリティッシュ','British'],      'https://www.britishairways.com/en-gb/'],
+  [['フィンエアー','Finnair'],         'https://www.finnair.com/jp/ja'],
+  [['イベリア','Iberia'],             'https://www.iberia.com/'],
+  [['マレーシア','Malaysia'],         'https://www.malaysiaairlines.com/'],
+  [['タイ国際','Thai'],               'https://www.thaiairways.com/ja/'],
+  [['エバー','EVA','長栄'],           'https://www.evaair.com/ja-jp/'],
+  [['チャイナエアライン','China Air'], 'https://www.china-airlines.com/jp/ja/'],
+  [['大韓','Korean Air'],            'https://www.koreanair.com/'],
+  [['アシアナ','Asiana'],             'https://jp.flyasiana.com/'],
+  [['ニュージーランド','Air New Zealand'], 'https://www.airnewzealand.jp/'],
+  [['ヴァージン','Virgin'],           'https://www.virginatlantic.com/'],
+  [['エジプト','EgyptAir'],          'https://www.egyptair.com/'],
+  [['エチオピア','Ethiopian'],        'https://www.ethiopianairlines.com/'],
+  [['南アフリカ','South African'],    'https://www.flysaa.com/'],
+];
 function getBookingUrl(r, source) {
+  // ANA/JAL自社便
   if (source === 'ANA自社便') {
     return r.airline === 'JAL' ? BOOKING_URLS['JAL'] : BOOKING_URLS['ANA'];
   }
-  if (source === '提携航空会社') {
-    return BOOKING_URLS[r.miles_type] || BOOKING_URLS['ANA'];
+  // 提携・Amex共通：まず航空会社名で引く
+  const airlineName = r.airline || '';
+  for (const [keys, url] of AIRLINE_URLS) {
+    if (keys.some(k => airlineName.includes(k))) return url;
   }
-  if (source === 'Amex転送') {
-    // miles_program で引く
-    if (r.miles_program) {
-      for (const key of Object.keys(BOOKING_URLS)) {
-        if (r.miles_program.includes(key) || key.includes(r.miles_program)) return BOOKING_URLS[key];
-      }
-    }
-    if (r.airline) {
-      const a = r.airline;
-      if (a.includes('ユナイテッド') || a.includes('United')) return BOOKING_URLS['MileagePlus'];
-      if (a.includes('デルタ') || a.includes('Delta')) return BOOKING_URLS['SkyMiles'];
-      if (a.includes('シンガポール') || a.includes('Singapore')) return BOOKING_URLS['KrisFlyer'];
-      if (a.includes('エールフランス') || a.includes('Air France') || a.includes('KLM')) return BOOKING_URLS['Flying Blue'];
-      if (a.includes('ターキッシュ') || a.includes('Turkish')) return BOOKING_URLS['Miles&Smiles'];
-    }
+  // 次にマイルプログラム名で引く
+  const prog = r.miles_program || '';
+  for (const [key, url] of Object.entries(PROGRAM_URLS)) {
+    if (prog.includes(key) || key.includes(prog)) return url;
   }
-  return null;
+  // 最後にマイル種別（ANAマイル/JALマイル）で引く
+  return BOOKING_URLS[r.miles_type] || null;
 }
 
 function getMilesForClass(r, cls, season) {
