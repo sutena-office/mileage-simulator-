@@ -737,24 +737,24 @@ document.getElementById('dirFilter').addEventListener('click', e => {
 
 // ─── 予約サイトURL ────────────────────────────────────────────────
 const BOOKING_URLS = {
-  'ANA':            'https://www.ana.co.jp/ja/jp/amc/tokuten-kouken/',
-  'JAL':            'https://www.jal.co.jp/jp/ja/inter/award/',
-  'ANAマイル':      'https://www.ana.co.jp/ja/jp/amc/tokuten-kouken/',
-  'JALマイル':      'https://www.jal.co.jp/jp/ja/inter/award/',
+  'ANA':               'https://www.ana.co.jp/',
+  'JAL':               'https://www.jal.co.jp/',
+  'ANAマイル':         'https://www.ana.co.jp/',
+  'JALマイル':         'https://www.jal.co.jp/',
   // Amex転送 マイルプログラム名
-  'MileagePlus':    'https://www.united.com/ja/jp/fly/mileageplus/awards/award-flights.html',
-  'SkyMiles':       'https://ja.delta.com/jp/ja/delta-skymiles/use-miles/redeem-miles-for-flights',
-  'KrisFlyer':      'https://www.singaporeair.com/ja_JP/jp/plan-travel/krisflyer/award-booking/',
-  'Flying Blue':    'https://wwws.airfrance.co.jp/information/common/guidevoyageur/pratique/flying-blue-miles.htm',
-  'Miles&Smiles':   'https://www.turkishairlines.com/ja-jp/miles-smiles/',
-  'Miles & More':   'https://www.miles-and-more.com/row/ja/',
-  'Asia Miles':     'https://www.cathaypacific.com/cx/ja_JP/asia-miles/spend.html',
-  'Etihad Guest':   'https://www.etihad.com/ja-ae/etihad-guest/',
-  'Privilege Club': 'https://www.qatarairways.com/ja-jp/privilege-club.html',
-  'AAdvantage':     'https://www.aa.com/aadvantage-program/awards/travel-awards',
-  'Avios':          'https://www.britishairways.com/en-gb/executive-club/avios/spend-avios',
-  'Royal Orchid Plus': 'https://www.thaiairways.com/ja/royal_orchid_plus/',
-  'Infinity MileageLands': 'https://www.evaair.com/ja-jp/member-privileges/',
+  'MileagePlus':       'https://www.united.com/ja/jp/',
+  'SkyMiles':          'https://ja.delta.com/',
+  'KrisFlyer':         'https://www.singaporeair.com/ja_JP/jp/',
+  'Flying Blue':       'https://wwws.airfrance.co.jp/',
+  'Miles&Smiles':      'https://www.turkishairlines.com/ja-jp/',
+  'Miles & More':      'https://www.miles-and-more.com/row/ja/',
+  'Asia Miles':        'https://www.cathaypacific.com/cx/ja_JP/',
+  'Etihad Guest':      'https://www.etihad.com/ja-ae/',
+  'Privilege Club':    'https://www.qatarairways.com/ja-jp/',
+  'AAdvantage':        'https://www.aa.com/',
+  'Avios':             'https://www.britishairways.com/en-gb/',
+  'Royal Orchid Plus': 'https://www.thaiairways.com/ja/',
+  'Infinity MileageLands': 'https://www.evaair.com/ja-jp/',
 };
 function getBookingUrl(r, source) {
   if (source === 'ANA自社便') {
