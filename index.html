@@ -88,6 +88,19 @@
   .cash-num.green { color: #38a169; }
   .notes-text { font-size: 0.78rem; color: #718096; margin-top: 0.5rem; line-height: 1.5; }
 
+  .booking-btn {
+    display: block; width: 100%; margin-top: 1rem;
+    background: linear-gradient(135deg, #2b6cb0, #3182ce);
+    color: white; text-decoration: none; text-align: center;
+    border-radius: 10px; padding: 0.7rem 1rem;
+    font-size: 0.9rem; font-weight: 700;
+    letter-spacing: 0.03em;
+    transition: background 0.2s, transform 0.15s;
+    box-shadow: 0 2px 8px rgba(43,108,176,0.3);
+  }
+  .booking-btn:hover { background: linear-gradient(135deg, #1a4e8a, #2b6cb0); transform: translateY(-1px); }
+  .booking-btn:active { transform: translateY(0); }
+
   .empty-state { text-align: center; padding: 4rem 2rem; color: #a0aec0; }
   .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
   .empty-state p { font-size: 1rem; }
@@ -116,6 +129,81 @@
     .search-btn { min-height: 52px; font-size: 1rem; }
     .miles-grid { grid-template-columns: repeat(2, 1fr); }
     .cash-row { gap: 0.8rem; }
+  }
+
+  /* ===== 用語集ボタン ===== */
+  #glossaryBtn {
+    position: fixed; top: 1rem; right: 1rem; z-index: 1000;
+    background: rgba(255,255,255,0.18); backdrop-filter: blur(8px);
+    color: white; border: 1.5px solid rgba(255,255,255,0.5);
+    border-radius: 30px; padding: 0.45rem 1rem;
+    font-size: 0.82rem; font-weight: 700; cursor: pointer;
+    letter-spacing: 0.03em; transition: all 0.2s;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  }
+  #glossaryBtn:hover { background: rgba(255,255,255,0.3); transform: translateY(-1px); }
+
+  /* ===== 用語集モーダル ===== */
+  #glossaryOverlay {
+    display: none; position: fixed; inset: 0; z-index: 2000;
+    background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
+    align-items: center; justify-content: center; padding: 1rem;
+  }
+  #glossaryOverlay.open { display: flex; }
+  #glossaryModal {
+    background: white; border-radius: 20px;
+    max-width: 580px; width: 100%; max-height: 85vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+    overflow: hidden;
+  }
+  .glossary-header {
+    background: linear-gradient(135deg, #1a365d, #2b6cb0);
+    color: white; padding: 1.2rem 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .glossary-header h2 { font-size: 1.15rem; font-weight: 700; }
+  .glossary-header p { font-size: 0.78rem; opacity: 0.8; margin-top: 0.2rem; }
+  #glossaryClose {
+    background: rgba(255,255,255,0.2); border: none; color: white;
+    width: 32px; height: 32px; border-radius: 50%; font-size: 1rem;
+    cursor: pointer; transition: background 0.2s; flex-shrink: 0;
+  }
+  #glossaryClose:hover { background: rgba(255,255,255,0.35); }
+  .glossary-body {
+    overflow-y: auto; padding: 1.2rem 1.5rem 1.5rem; flex: 1;
+  }
+  .glossary-section {
+    margin-bottom: 1.6rem;
+  }
+  .glossary-section-title {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: #a0aec0;
+    border-bottom: 2px solid #edf2f7; padding-bottom: 0.4rem;
+    margin-bottom: 0.8rem;
+  }
+  .glossary-term {
+    margin-bottom: 0.9rem;
+  }
+  .glossary-term dt {
+    font-weight: 700; font-size: 0.95rem; color: #2b6cb0;
+    display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.25rem;
+  }
+  .glossary-term dt .g-tag {
+    font-size: 0.65rem; background: #ebf8ff; color: #2b6cb0;
+    border: 1px solid #bee3f8; border-radius: 6px;
+    padding: 1px 6px; font-weight: 600; white-space: nowrap;
+  }
+  .glossary-term dd {
+    font-size: 0.85rem; color: #4a5568; line-height: 1.75;
+    margin-left: 0; padding-left: 0.8rem;
+    border-left: 3px solid #e2e8f0;
+  }
+  .glossary-term dd strong { color: #2d3748; }
+  @media (max-width: 600px) {
+    #glossaryBtn { top: 0.7rem; right: 0.7rem; font-size: 0.75rem; padding: 0.4rem 0.8rem; }
+    .glossary-body { padding: 1rem 1rem 1.2rem; }
   }
 
   /* ===== 利用規約オーバーレイ ===== */
@@ -148,15 +236,29 @@
   }
   #tosBox .tos-scroll h3 { font-size: 0.85rem; color: #2d3748; font-weight: 700; margin: 0.8rem 0 0.3rem; }
   #tosBox .tos-scroll h3:first-child { margin-top: 0; }
+  .tos-scroll-wrap { position: relative; margin-bottom: 1.1rem; }
+  #tosBox .tos-scroll { margin-bottom: 0; }
+  .tos-scroll-hint {
+    text-align: center; font-size: 0.78rem; font-weight: 600;
+    color: #2b6cb0; padding: 0.45rem 0.8rem 0.5rem;
+    background: #ebf8ff; border: 1px solid #bee3f8;
+    border-top: none; border-radius: 0 0 10px 10px;
+    margin-bottom: 1.1rem;
+    transition: opacity 0.4s;
+  }
+  .tos-scroll-hint.hidden { opacity: 0; pointer-events: none; }
   #tosBox .tos-check {
     display: flex; align-items: center; gap: 0.6rem;
-    cursor: pointer; font-size: 0.9rem; color: #2d3748;
+    font-size: 0.9rem; color: #2d3748;
     font-weight: 600; margin-bottom: 1.1rem;
-    user-select: none;
+    user-select: none; transition: opacity 0.3s;
   }
+  #tosBox .tos-check.disabled-look { opacity: 0.4; cursor: not-allowed; }
+  #tosBox .tos-check:not(.disabled-look) { cursor: pointer; }
   #tosBox .tos-check input[type=checkbox] {
     width: 18px; height: 18px; accent-color: #2b6cb0; cursor: pointer; flex-shrink: 0;
   }
+  #tosBox .tos-check input[type=checkbox]:disabled { cursor: not-allowed; }
   #tosAgreeBtn {
     width: 100%; padding: 0.9rem;
     border: none; border-radius: 10px;
@@ -177,6 +279,190 @@
 </head>
 <body>
 
+<!-- ===== 用語集ボタン ===== -->
+<button id="glossaryBtn">📖 用語集</button>
+
+<!-- ===== 用語集モーダル ===== -->
+<div id="glossaryOverlay">
+  <div id="glossaryModal">
+    <div class="glossary-header">
+      <div>
+        <h2>📖 マイル活 用語集</h2>
+        <p>わからない言葉はここで確認しよう</p>
+      </div>
+      <button id="glossaryClose">✕</button>
+    </div>
+    <div class="glossary-body">
+
+      <!-- ① 基本用語 -->
+      <div class="glossary-section">
+        <div class="glossary-section-title">✈ 基本用語</div>
+        <dl>
+          <div class="glossary-term">
+            <dt>マイル</dt>
+            <dd>飛行機に乗ったり、クレジットカードで買い物をしたりするとたまるポイントのこと。貯めたマイルを使って、<strong>タダ（または格安）で飛行機に乗れる</strong>のが「マイル活」のしくみです。</dd>
+          </div>
+          <div class="glossary-term">
+            <dt>特典航空券</dt>
+            <dd>現金ではなく<strong>マイルを使って発行する航空券</strong>のこと。「特典」と名のつく通り、通常の航空券より大幅に安く（またはゼロ円で）乗れるのが最大の魅力です。</dd>
+          </div>
+          <div class="glossary-term">
+            <dt>マイレージプログラム</dt>
+            <dd>航空会社が用意している<strong>「マイルを貯めて使う」会員サービス</strong>のこと。ANA・JAL・ユナイテッド航空など、各社が独自のプログラムを持っています。</dd>
+          </div>
+          <div class="glossary-term">
+            <dt>発券（はっけん）</dt>
+            <dd>航空券を<strong>正式に予約・発行すること</strong>。「マイルで発券する」＝マイルを使って特典航空券を手配することを指します。</dd>
+          </div>
+          <div class="glossary-term">
+            <dt>往復（おうふく）／片道（かたみち）</dt>
+            <dd><strong>往復</strong>は「行き＋帰り」の2区間セット。<strong>片道</strong>は「行きだけ」または「帰りだけ」の1区間。特典航空券は往復のほうがマイル効率が良い場合が多いです。</dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- ② 座席クラス -->
+      <div class="glossary-section">
+        <div class="glossary-section-title">💺 座席クラス</div>
+        <dl>
+          <div class="glossary-term">
+            <dt>エコノミークラス <span class="g-tag">Economy</span></dt>
+            <dd>飛行機の中で<strong>一番リーズナブルな座席</strong>。必要なマイルが少ないので、初めて特典航空券を使う方にもおすすめです。</dd>
+          </div>
+          <div class="glossary-term">
+            <dt>プレミアムエコノミークラス <span class="g-tag">Premium Economy</span></dt>
+            <dd>エコノミーよりも<strong>座席が広く、食事や快適さがアップ</strong>したクラス。エコノミーとビジネスの中間にあります。</dd>
+          </div>
+          <div class="glossary-term">
+            <dt>ビジネスクラス <span class="g-tag">Business</span></dt>
+            <dd>フルフラットになるシートや豪華な食事が楽しめる<strong>上級クラス</strong>。長距離フライトをぐっすり眠って移動できます。マイルを使うとコスパが非常に高いのが特徴です。</dd>
+          </div>
+          <div class="glossary-term">
+            <dt>ファーストクラス <span class="g-tag">First</span></dt>
+            <dd>飛行機の中で<strong>最高ランクの座席</strong>。個室のようなプライベート空間や最高級の食事が楽しめます。現金で買うと数十万〜数百万円することもあり、マイル発券の価値が最も高いクラスです。</dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- ③ 費用・コスト -->
+      <div class="glossary-section">
+        <div class="glossary-section-title">💴 費用・コスト</div>
+        <dl>
+          <div class="glossary-term">
+            <dt>燃油サーチャージ（YQ）</dt>
+            <dd>航空機を飛ばすための<strong>燃料（ジェット燃料）代の一部を乗客が負担する追加費用</strong>のこと。「YQ」とも呼ばれます。原油価格によって金額が変わり、路線によっては数万円になることも。<strong>「★ YQなし」の便はこの費用がゼロ</strong>なのでとてもお得です。</dd>
+          </div>
+          <div class="glossary-term">
+            <dt>空港税・諸費用（Tax）</dt>
+            <dd>各国の空港の利用料や安全サービス料など、<strong>国や空港に支払う税金・手数料</strong>のこと。特典航空券でもこの費用は現金で支払う必要があります。</dd>
+          </div>
+          <div class="glossary-term">
+            <dt>現金合計（総コスト）</dt>
+            <dd>燃油サーチャージ＋空港税をあわせた<strong>実際に現金で支払う合計額</strong>のこと。マイルで航空券を発行しても、この現金部分は必要です。</dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- ④ シーズン -->
+      <div class="glossary-section">
+        <div class="glossary-section-title">📅 シーズン（時期）</div>
+        <dl>
+          <div class="glossary-term">
+            <dt>Lowシーズン <span class="g-tag">閑散期</span></dt>
+            <dd>旅行者が少ない<strong>空いている時期</strong>。必要なマイル数が最も少なく、一番お得に特典航空券を取れます。</dd>
+          </div>
+          <div class="glossary-term">
+            <dt>Regularシーズン <span class="g-tag">通常期</span></dt>
+            <dd><strong>普通の時期</strong>。マイル数もLowとHighの中間になります。</dd>
+          </div>
+          <div class="glossary-term">
+            <dt>Highシーズン <span class="g-tag">繁忙期</span></dt>
+            <dd>お盆・年末年始・GWなど<strong>旅行者が多い人気の時期</strong>。必要なマイル数が最も多くなります。早めの予約が大切です。</dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- ⑤ 航空会社・アライアンス -->
+      <div class="glossary-section">
+        <div class="glossary-section-title">🌐 航空会社・アライアンス</div>
+        <dl>
+          <div class="glossary-term">
+            <dt>ANA（全日本空輸）</dt>
+            <dd>日本を代表する航空会社のひとつ。<strong>ANAマイル（AMC）</strong>を貯めてANA便や提携航空会社の特典航空券を発行できます。</dd>
+          </div>
+          <div class="glossary-term">
+            <dt>JAL（日本航空）</dt>
+            <dd>日本のもうひとつの大手航空会社。<strong>JALマイル（JALマイレージバンク）</strong>を貯めて特典航空券を発行できます。</dd>
+          </div>
+          <div class="glossary-term">
+            <dt>提携航空会社</dt>
+            <dd>ANAやJALと協力関係にある<strong>外国の航空会社</strong>。ANAマイルやJALマイルを使って、これらの航空会社の便にも乗ることができます。</dd>
+          </div>
+          <div class="glossary-term">
+            <dt>アライアンス（航空連合）</dt>
+            <dd>複数の航空会社が協力してつくる<strong>グループ（連合）</strong>のこと。同じグループ内ならマイルを共通で使えます。主な3グループは下記の通りです。</dd>
+          </div>
+          <div class="glossary-term">
+            <dt>スターアライアンス <span class="g-tag">Star Alliance</span></dt>
+            <dd>世界最大の航空連合。<strong>ANAが加盟</strong>しており、ユナイテッド航空・シンガポール航空・タイ航空などが仲間です。ANAマイルでこれらの便に乗れます。</dd>
+          </div>
+          <div class="glossary-term">
+            <dt>ワンワールド <span class="g-tag">oneworld</span></dt>
+            <dd><strong>JALが加盟</strong>する航空連合。アメリカン航空・ブリティッシュエアウェイズ・カセイパシフィックなどが仲間です。JALマイルでこれらの便に乗れます。</dd>
+          </div>
+          <div class="glossary-term">
+            <dt>スカイチーム <span class="g-tag">SkyTeam</span></dt>
+            <dd>デルタ航空・エールフランス・KLMなどが加盟する航空連合。ANAもJALも加盟していませんが、<strong>Amex転送</strong>でこれらの便の特典航空券を取る方法があります。</dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- ⑥ マイルプログラム -->
+      <div class="glossary-section">
+        <div class="glossary-section-title">🏆 主なマイルプログラム</div>
+        <dl>
+          <div class="glossary-term">
+            <dt>MileagePlus <span class="g-tag">ユナイテッド航空</span></dt>
+            <dd>アメリカのユナイテッド航空のマイルプログラム。<strong>日本〜アメリカ便の特典航空券でYQ（燃油サーチャージ）がかからない</strong>ことが多く、人気があります。</dd>
+          </div>
+          <div class="glossary-term">
+            <dt>SkyMiles <span class="g-tag">デルタ航空</span></dt>
+            <dd>アメリカのデルタ航空のマイルプログラム。スカイチームの便に乗れます。</dd>
+          </div>
+          <div class="glossary-term">
+            <dt>KrisFlyer <span class="g-tag">シンガポール航空</span></dt>
+            <dd>シンガポール航空のマイルプログラム。<strong>ビジネス・ファーストクラスの価値が高い</strong>と人気のプログラムです。</dd>
+          </div>
+          <div class="glossary-term">
+            <dt>Flying Blue <span class="g-tag">エールフランス/KLM</span></dt>
+            <dd>フランスのエールフランスとオランダのKLMが共同で運営するマイルプログラム。ヨーロッパへのフライトに使えます。</dd>
+          </div>
+          <div class="glossary-term">
+            <dt>Miles&Smiles <span class="g-tag">ターキッシュエアラインズ</span></dt>
+            <dd>トルコ航空のマイルプログラム。スターアライアンス加盟のため、<strong>ANAマイルと組み合わせて使える</strong>場合があります。</dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- ⑦ Amex転送 -->
+      <div class="glossary-section">
+        <div class="glossary-section-title">💳 Amex転送</div>
+        <dl>
+          <div class="glossary-term">
+            <dt>Amex転送</dt>
+            <dd><strong>アメリカン・エキスプレス（Amex）のクレジットカードのポイント</strong>を、さまざまな航空会社のマイルに交換すること。ANAやJALだけでなく、ユナイテッド・デルタ・シンガポール航空など<strong>多くの航空会社のマイルに転送</strong>できるのが魅力です。</dd>
+          </div>
+          <div class="glossary-term">
+            <dt>Amex→マイル交換比</dt>
+            <dd>Amexポイント「1ポイント」が、何マイルに交換できるかの割合のこと。例えば「1:1」なら1ポイント＝1マイル、「2:1」なら2ポイントで1マイルになります。</dd>
+          </div>
+        </dl>
+      </div>
+
+    </div><!-- /glossary-body -->
+  </div>
+</div>
+
 <!-- ===== 利用規約オーバーレイ ===== -->
 <div id="tosOverlay">
   <div id="tosBox">
@@ -185,7 +471,7 @@
       <p>ご利用の前に、利用規約をお読みください</p>
     </div>
     <div class="tos-body">
-      <div class="tos-scroll">
+      <div class="tos-scroll" id="tosScroll">
         <h3>📌 ご利用目的について</h3>
         本ツールは「マイル活講座」の受講生を対象としたシミュレーターです。
         受講生以外の方のご利用はお断りしています。
@@ -205,8 +491,10 @@
         必ず自己判断のもとでご利用ください。
       </div>
 
-      <label class="tos-check">
-        <input type="checkbox" id="tosCheck">
+      <div class="tos-scroll-hint" id="tosScrollHint">↓ 最後までスクロールしてください</div>
+
+      <label class="tos-check disabled-look" id="tosCheckLabel">
+        <input type="checkbox" id="tosCheck" disabled>
         利用規約を読み、内容に同意します
       </label>
 
@@ -447,6 +735,53 @@ document.getElementById('dirFilter').addEventListener('click', e => {
   if (selectedCity) renderResults();
 });
 
+// ─── 予約サイトURL ────────────────────────────────────────────────
+const BOOKING_URLS = {
+  'ANA':            'https://www.ana.co.jp/ja/jp/amc/tokuten-kouken/',
+  'JAL':            'https://www.jal.co.jp/jp/ja/inter/award/',
+  'ANAマイル':      'https://www.ana.co.jp/ja/jp/amc/tokuten-kouken/',
+  'JALマイル':      'https://www.jal.co.jp/jp/ja/inter/award/',
+  // Amex転送 マイルプログラム名
+  'MileagePlus':    'https://www.united.com/ja/jp/fly/mileageplus/awards/award-flights.html',
+  'SkyMiles':       'https://ja.delta.com/jp/ja/delta-skymiles/use-miles/redeem-miles-for-flights',
+  'KrisFlyer':      'https://www.singaporeair.com/ja_JP/jp/plan-travel/krisflyer/award-booking/',
+  'Flying Blue':    'https://wwws.airfrance.co.jp/information/common/guidevoyageur/pratique/flying-blue-miles.htm',
+  'Miles&Smiles':   'https://www.turkishairlines.com/ja-jp/miles-smiles/',
+  'Miles & More':   'https://www.miles-and-more.com/row/ja/',
+  'Asia Miles':     'https://www.cathaypacific.com/cx/ja_JP/asia-miles/spend.html',
+  'Etihad Guest':   'https://www.etihad.com/ja-ae/etihad-guest/',
+  'Privilege Club': 'https://www.qatarairways.com/ja-jp/privilege-club.html',
+  'AAdvantage':     'https://www.aa.com/aadvantage-program/awards/travel-awards',
+  'Avios':          'https://www.britishairways.com/en-gb/executive-club/avios/spend-avios',
+  'Royal Orchid Plus': 'https://www.thaiairways.com/ja/royal_orchid_plus/',
+  'Infinity MileageLands': 'https://www.evaair.com/ja-jp/member-privileges/',
+};
+function getBookingUrl(r, source) {
+  if (source === 'ANA自社便') {
+    return r.airline === 'JAL' ? BOOKING_URLS['JAL'] : BOOKING_URLS['ANA'];
+  }
+  if (source === '提携航空会社') {
+    return BOOKING_URLS[r.miles_type] || BOOKING_URLS['ANA'];
+  }
+  if (source === 'Amex転送') {
+    // miles_program で引く
+    if (r.miles_program) {
+      for (const key of Object.keys(BOOKING_URLS)) {
+        if (r.miles_program.includes(key) || key.includes(r.miles_program)) return BOOKING_URLS[key];
+      }
+    }
+    if (r.airline) {
+      const a = r.airline;
+      if (a.includes('ユナイテッド') || a.includes('United')) return BOOKING_URLS['MileagePlus'];
+      if (a.includes('デルタ') || a.includes('Delta')) return BOOKING_URLS['SkyMiles'];
+      if (a.includes('シンガポール') || a.includes('Singapore')) return BOOKING_URLS['KrisFlyer'];
+      if (a.includes('エールフランス') || a.includes('Air France') || a.includes('KLM')) return BOOKING_URLS['Flying Blue'];
+      if (a.includes('ターキッシュ') || a.includes('Turkish')) return BOOKING_URLS['Miles&Smiles'];
+    }
+  }
+  return null;
+}
+
 function getMilesForClass(r, cls, season) {
   if (r.source === 'ANA自社便') {
     const obj = r[cls];
@@ -575,6 +910,11 @@ function renderResults() {
 
     const notes = r.notes && r.notes !== 'NaN' ? `<div class="notes-text">📝 ${r.notes}</div>` : '';
 
+    const bookingUrl = getBookingUrl(r, source);
+    const bookingBtn = bookingUrl
+      ? `<a href="${bookingUrl}" target="_blank" rel="noopener noreferrer" class="booking-btn">✈ 公式サイトで特典航空券を予約 →</a>`
+      : '';
+
     return `<div class="card ${isBestMiles ? 'card-best' : isBestCost ? 'card-best-cost' : ''}">
       ${isBestMiles ? '<div class="best-badge">👑 マイル最少</div>' : ''}
       ${isBestCost ? '<div class="best-badge-cost">💴 総コスト最安</div>' : ''}
@@ -588,6 +928,7 @@ function renderResults() {
       ${milesHtml}
       ${cashHtml}
       ${notes}
+      ${bookingBtn}
     </div>`;
   }
 
@@ -646,9 +987,27 @@ document.getElementById('searchBtn').addEventListener('click', () => {
 
 // ===== 利用規約オーバーレイ制御 =====
 (function() {
-  const overlay  = document.getElementById('tosOverlay');
-  const checkbox = document.getElementById('tosCheck');
-  const btn      = document.getElementById('tosAgreeBtn');
+  const overlay    = document.getElementById('tosOverlay');
+  const checkbox   = document.getElementById('tosCheck');
+  const btn        = document.getElementById('tosAgreeBtn');
+  const tosScroll  = document.getElementById('tosScroll');
+  const scrollHint = document.getElementById('tosScrollHint');
+  const checkLabel = document.getElementById('tosCheckLabel');
+
+  // スクロール検知：最後まで読んだらチェックボックスを有効化
+  function checkScrolled() {
+    const threshold = 10; // px の余裕
+    const reachedBottom = tosScroll.scrollTop + tosScroll.clientHeight >= tosScroll.scrollHeight - threshold;
+    if (reachedBottom) {
+      checkbox.disabled = false;
+      checkLabel.classList.remove('disabled-look');
+      scrollHint.classList.add('hidden');
+      tosScroll.removeEventListener('scroll', checkScrolled);
+    }
+  }
+  tosScroll.addEventListener('scroll', checkScrolled);
+  // 初期状態でもし既に全部見えている場合（テキストが短い場合）は即解除
+  checkScrolled();
 
   // チェックボックスの状態でボタンを切り替え
   checkbox.addEventListener('change', () => {
@@ -660,6 +1019,35 @@ document.getElementById('searchBtn').addEventListener('click', () => {
     overlay.style.opacity = '0';
     overlay.style.transition = 'opacity 0.4s ease';
     setTimeout(() => { overlay.style.display = 'none'; }, 400);
+  });
+})();
+
+// ===== 用語集モーダル =====
+(function() {
+  const glossaryBtn     = document.getElementById('glossaryBtn');
+  const glossaryOverlay = document.getElementById('glossaryOverlay');
+  const glossaryClose   = document.getElementById('glossaryClose');
+
+  glossaryBtn.addEventListener('click', () => {
+    glossaryOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  });
+
+  function closeGlossary() {
+    glossaryOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  glossaryClose.addEventListener('click', closeGlossary);
+
+  // オーバーレイ背景クリックで閉じる
+  glossaryOverlay.addEventListener('click', (e) => {
+    if (e.target === glossaryOverlay) closeGlossary();
+  });
+
+  // Escキーでも閉じる
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && glossaryOverlay.classList.contains('open')) closeGlossary();
   });
 })();
 </script>
