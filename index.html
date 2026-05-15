@@ -734,7 +734,8 @@ const allCities = Object.keys(cityMap).filter(c =>
 
 // Season display
 function showSeason() {
-  const s = activeSeason === 'auto' ? getCurrentSeason('ANA', '北米欧州') : activeSeason;
+  // autoの場合：検索済みならそのゾーン、未検索ならグループC（長距離）基準
+  const s = activeSeason === 'auto' ? calcSeason(MM, DD, currentSearchZone) : activeSeason;
   const badge = document.getElementById('seasonBadge');
   const map = { Low: ['🟢 Low（お得期間）', 'season-low'],
                 Regular: ['🔵 Regular', 'season-regular'],
@@ -758,6 +759,7 @@ let activeClass = 'all';
 let activeDir = '往復';
 let activeSeason = 'auto'; // 'auto' | 'Low' | 'Regular' | 'High'
 let activePriority = 'miles'; // 'miles' | 'cost'
+let currentSearchZone = ''; // 直近の検索で判明したゾーン（バッジ表示に使用）
 
 showSeason();
 
@@ -770,7 +772,9 @@ searchInput.addEventListener('input', () => {
   // 入力が変わったら選択をリセット（再検索バグ修正）
   if (selectedCity && q !== selectedCity) {
     selectedCity = null;
+    currentSearchZone = '';
     document.getElementById('searchBtn').disabled = true;
+    if (activeSeason === 'auto') showSeason(); // バッジをデフォルト（グループC）に戻す
   }
 
   if (!q) { suggestList.classList.add('hidden'); return; }
@@ -982,6 +986,10 @@ function renderResults() {
     mainEl.innerHTML = `<div class="empty-state"><div class="icon">😔</div><p>「${city}」の路線データが見つかりませんでした。<br>別のキーワードで検索してみてください。</p></div>`;
     return;
   }
+
+  // 検索した都市のゾーンをグローバルに記録 → バッジ表示をゾーン対応に
+  currentSearchZone = anaMatches.length ? (anaMatches[0].zone || '') : '';
+  if (activeSeason === 'auto') showSeason(); // バッジを正しいゾーンで更新
 
   const classes = activeClass === 'all'
     ? ['economy','premium_economy','business','first']
