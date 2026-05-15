@@ -108,6 +108,42 @@
   .tip-box { background: #fffbeb; border: 1px solid #fbd38d; border-radius: 12px; padding: 1rem 1.2rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: #744210; line-height: 1.7; }
   .tip-box strong { color: #c05621; }
 
+  .search-tabs { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1rem; }
+  .tab-btn { background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.4); color: white; border-radius: 24px; padding: 0.45rem 1.1rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .tab-btn.active { background: white; color: #2b6cb0; border-color: white; }
+  .tab-panel { max-width: 640px; margin: 0 auto; }
+
+  .miles-search-box { background: rgba(255,255,255,0.12); border-radius: 16px; padding: 1.2rem 1.4rem; backdrop-filter: blur(6px); }
+  .miles-search-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 0; }
+  .miles-search-field { display: flex; flex-direction: column; gap: 0.4rem; flex: 1; min-width: 140px; }
+  .miles-search-label { font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 0.05em; }
+  .miles-type-group { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+  .miles-type-btn { background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.35); color: white; border-radius: 20px; padding: 0.3rem 0.7rem; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+  .miles-type-btn.active { background: white; color: #2b6cb0; border-color: white; }
+  .miles-number-input { background: white; border: none; border-radius: 10px; padding: 0.6rem 0.9rem; font-size: 1rem; font-weight: 700; color: #2d3748; outline: none; width: 100%; -webkit-appearance: none; }
+
+  .date-input {
+    border: 1.5px solid #e2e8f0; border-radius: 8px;
+    padding: 0.3rem 0.6rem; font-size: 0.82rem; color: #2d3748;
+    background: white; cursor: pointer; outline: none;
+  }
+  .date-input:focus { border-color: #2b6cb0; }
+
+  .season-cal { background: white; border-radius: 14px; padding: 1rem 1.2rem; margin-bottom: 1.2rem; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1.5px solid #e2e8f0; }
+  .season-cal-title { font-size: 0.8rem; font-weight: 700; color: #718096; margin-bottom: 0.7rem; }
+  .season-cal-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; margin-bottom: 0.6rem; }
+  .cal-cell { border-radius: 6px; padding: 0.3rem 0.1rem; text-align: center; }
+  .cal-month { font-size: 0.65rem; color: inherit; font-weight: 600; }
+  .cal-season { font-size: 0.7rem; font-weight: 700; }
+  .cal-low { background: #c6f6d5; color: #276749; }
+  .cal-reg { background: #bee3f8; color: #2c5282; }
+  .cal-high { background: #fed7d7; color: #9b2c2c; }
+  .season-cal-legend { display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.75rem; }
+  .cal-legend { display: flex; align-items: center; gap: 0.3rem; }
+  @media (max-width: 600px) {
+    .season-cal-grid { grid-template-columns: repeat(6, 1fr); }
+  }
+
   .footer { text-align: center; padding: 1.5rem; font-size: 0.75rem; color: #a0aec0; }
 
   @media (max-width: 600px) {
@@ -504,15 +540,54 @@
 </div>
 
 <div class="hero">
-  <h1>✈ マイル活 特典航空券シミュレーター</h1>
-  <p>行き先を入力して、一番お得なマイル発券ルートを比較しよう</p>
-  <div class="search-box">
+  <h1>マイルで行く<br>特典航空券シミュレーター</h1>
+  <p>行き先からも、保有マイル数からも検索できます</p>
+
+  <div class="search-tabs">
+    <button class="tab-btn active" data-tab="dest">🔍 行き先から検索</button>
+    <button class="tab-btn" data-tab="miles">✈ 保有マイルから探す</button>
+  </div>
+
+  <!-- タブ①：行き先検索（既存） -->
+  <div id="tabDest" class="tab-panel">
+    <div class="search-box">
     <div class="search-input-wrap">
       <span class="search-icon">🔍</span>
-      <input type="text" id="searchInput" placeholder="都市名を入力（例：パリ、ホノルル、バンコク）" autocomplete="off">
+      <input type="text" id="searchInput" placeholder="都市名・国名・空港コード（例：パリ、アメリカ、HNL）" autocomplete="off">
       <div class="suggest-list hidden" id="suggestList"></div>
     </div>
     <button id="searchBtn" class="search-btn" disabled>検索</button>
+  </div>
+  </div>
+
+  <!-- タブ②：保有マイル逆引き -->
+  <div id="tabMiles" class="tab-panel hidden">
+    <div class="miles-search-box">
+      <div class="miles-search-row">
+        <div class="miles-search-field">
+          <label class="miles-search-label">マイル種別</label>
+          <div class="miles-type-group">
+            <button class="miles-type-btn active" data-type="ANAマイル">ANA</button>
+            <button class="miles-type-btn" data-type="JALマイル">JAL</button>
+            <button class="miles-type-btn" data-type="両方">両方</button>
+          </div>
+        </div>
+        <div class="miles-search-field">
+          <label class="miles-search-label">保有マイル数</label>
+          <input type="number" id="milesInput" class="miles-number-input" placeholder="例：50000" min="0" step="1000">
+        </div>
+        <div class="miles-search-field">
+          <label class="miles-search-label">クラス</label>
+          <div class="miles-type-group">
+            <button class="miles-type-btn active" data-class="all">すべて</button>
+            <button class="miles-type-btn" data-class="economy">エコノミー</button>
+            <button class="miles-type-btn" data-class="business">ビジネス</button>
+            <button class="miles-type-btn" data-class="first">ファースト</button>
+          </div>
+        </div>
+      </div>
+      <button id="milesSearchBtn" class="search-btn" style="margin-top:0.6rem">この保有マイルで乗れる路線を探す</button>
+    </div>
   </div>
 </div>
 
@@ -538,6 +613,7 @@
       <button class="btn-filter" data-val="Regular">Regular</button>
       <button class="btn-filter" data-val="High">High</button>
     </div>
+    <input type="date" id="dateInput" class="date-input" title="日付を指定してシーズンを確認">
     <div id="seasonBadge" class="season-badge season-regular" style="margin-left:auto"></div>
   </div>
   <div class="filter-card" style="margin-top:0.5rem">
@@ -567,27 +643,26 @@ const today = new Date();
 const MM = today.getMonth() + 1;
 const DD = today.getDate();
 
-function dateBetween(m1,d1,m2,d2) {
-  const t = MM*100+DD, s = m1*100+d1, e = m2*100+d2;
+// checkM, checkD を省略すると今日の月日で判定
+function dateBetween(m1,d1,m2,d2, checkM, checkD) {
+  const cm = (checkM !== undefined) ? checkM : MM;
+  const cd = (checkD !== undefined) ? checkD : DD;
+  const t = cm*100+cd, s = m1*100+d1, e = m2*100+d2;
   return t >= s && t <= e;
 }
 
-function getCurrentSeason(airline, routeType) {
-  // ANA season logic
-  let lo, hi;
-  if (airline === 'ANA') {
-    if (routeType && routeType.includes('アジア')) {
-      lo = (dateBetween(1,5,2,13)||dateBetween(4,1,4,28)||dateBetween(5,11,6,30));
-      hi = (dateBetween(1,1,1,4)||dateBetween(4,29,5,10)||dateBetween(7,18,8,23)||dateBetween(12,21,12,31));
-    } else {
-      lo = (dateBetween(1,5,2,13)||dateBetween(4,1,4,28)||dateBetween(5,11,6,30));
-      hi = (dateBetween(1,1,1,4)||dateBetween(4,29,5,10)||dateBetween(7,18,8,23)||dateBetween(12,21,12,31));
-    }
-    if (hi) return 'High';
-    if (lo) return 'Low';
-    return 'Regular';
-  }
+// 任意の月日でシーズンを計算する汎用関数
+function calcSeason(m, d) {
+  const db = (m1,d1,m2,d2) => dateBetween(m1,d1,m2,d2,m,d);
+  const lo = db(1,5,2,13)||db(4,1,4,28)||db(5,11,6,30);
+  const hi = db(1,1,1,4)||db(4,29,5,10)||db(7,18,8,23)||db(12,21,12,31);
+  if (hi) return 'High';
+  if (lo) return 'Low';
   return 'Regular';
+}
+
+function getCurrentSeason(airline, routeType) {
+  return calcSeason(MM, DD);
 }
 
 function getSeasonForRoute(r) {
@@ -645,7 +720,15 @@ function showSeason() {
   const map = { Low: ['🟢 Low（お得期間）', 'season-low'],
                 Regular: ['🔵 Regular', 'season-regular'],
                 High: ['🔴 High（繁忙期）', 'season-high'] };
-  const label = activeSeason === 'auto' ? map[s][0] + ' ※自動' : map[s][0];
+  let label;
+  if (activeSeason === 'auto') {
+    label = '本日は ' + map[s][0];
+  } else if (activeSeason === 'date') {
+    const dv = document.getElementById('dateInput') && document.getElementById('dateInput').value;
+    label = (dv || '選択日') + '：' + map[s][0];
+  } else {
+    label = map[s][0];
+  }
   badge.textContent = label;
   badge.className = 'season-badge ' + map[s][1];
 }
@@ -723,6 +806,34 @@ document.getElementById('seasonFilter').addEventListener('click', e => {
   document.querySelectorAll('#seasonFilter .btn-filter').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   activeSeason = btn.dataset.val;
+  // 日付入力をクリア
+  const di = document.getElementById('dateInput');
+  if (di) di.value = '';
+  showSeason();
+  if (selectedCity) renderResults();
+});
+
+document.getElementById('dateInput').addEventListener('change', function() {
+  const val = this.value; // "2026-08-15"
+  if (!val) {
+    // 日付クリア → 自動に戻す
+    activeSeason = 'auto';
+    document.querySelectorAll('#seasonFilter .btn-filter').forEach(b => {
+      b.classList.toggle('active', b.dataset.val === 'auto');
+    });
+    showSeason();
+    if (selectedCity) renderResults();
+    return;
+  }
+  const parts = val.split('-');
+  const m = parseInt(parts[1]);
+  const d = parseInt(parts[2]);
+  const s = calcSeason(m, d);
+  activeSeason = s; // Low / Regular / High に固定
+  // seasonFilter ボタンの active を更新
+  document.querySelectorAll('#seasonFilter .btn-filter').forEach(b => {
+    b.classList.toggle('active', b.dataset.val === s);
+  });
   showSeason();
   if (selectedCity) renderResults();
 });
@@ -899,6 +1010,18 @@ function renderResults() {
     html += `<div class="tip-box">💡 <strong>★ 燃油サーチャージ無し</strong>の便があります！マイル＋空港税のみで搭乗できます。</div>`;
   }
 
+  // シーズンカレンダー（ANAベース）
+  const monthNames = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  const seasonColor = { Low:'cal-low', Regular:'cal-reg', High:'cal-high' };
+  const seasonLabel = { Low:'Low', Regular:'Reg', High:'High' };
+  let calHtml = '<div class="season-cal"><div class="season-cal-title">📅 月別シーズンカレンダー（ANAベース）</div><div class="season-cal-grid">';
+  for (let mo = 1; mo <= 12; mo++) {
+    const s = calcSeason(mo, 15); // 各月15日で判定
+    calHtml += `<div class="cal-cell ${seasonColor[s]}"><div class="cal-month">${monthNames[mo-1]}</div><div class="cal-season">${seasonLabel[s]}</div></div>`;
+  }
+  calHtml += '</div><div class="season-cal-legend"><span class="cal-legend cal-low">🟢 Low（閑散期・お得）</span><span class="cal-legend cal-reg">🔵 Regular（通常）</span><span class="cal-legend cal-high">🔴 High（繁忙期）</span></div></div>';
+  html += calHtml;
+
   function buildCard(r, key, source) {
     const season = getSeasonForRoute(r);
     const isBestMiles = key === bestKey && activePriority === 'miles';
@@ -1058,6 +1181,156 @@ document.getElementById('searchBtn').addEventListener('click', () => {
     overlay.style.transition = 'opacity 0.4s ease';
     setTimeout(() => { overlay.style.display = 'none'; }, 400);
   });
+})();
+
+// ===== タブ切り替え =====
+(function() {
+  const tabs = document.querySelectorAll('.tab-btn');
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabs.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const tab = btn.dataset.tab;
+      document.getElementById('tabDest').classList.toggle('hidden', tab !== 'dest');
+      document.getElementById('tabMiles').classList.toggle('hidden', tab !== 'miles');
+      // 結果エリアをリセット
+      document.getElementById('mainContent').innerHTML = '';
+    });
+  });
+})();
+
+// ===== マイル逆引き検索 =====
+(function() {
+  let activeMilesType = 'ANAマイル';
+  let activeMilesClass = 'all';
+  const classes = ['economy','premium_economy','business','first'];
+  const classLabel = { economy:'エコノミー', premium_economy:'プレミアムY', business:'ビジネス', first:'ファースト' };
+
+  // マイル種別ボタン
+  document.querySelectorAll('#tabMiles .miles-type-btn[data-type]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#tabMiles .miles-type-btn[data-type]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeMilesType = btn.dataset.type;
+    });
+  });
+
+  // クラスボタン
+  document.querySelectorAll('#tabMiles .miles-type-btn[data-class]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#tabMiles .miles-type-btn[data-class]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeMilesClass = btn.dataset.class;
+    });
+  });
+
+  document.getElementById('milesSearchBtn').addEventListener('click', () => {
+    const inputVal = parseInt(document.getElementById('milesInput').value);
+    if (!inputVal || inputVal <= 0) {
+      alert('保有マイル数を入力してください');
+      return;
+    }
+    renderMilesResults(inputVal, activeMilesType, activeMilesClass);
+  });
+
+  function getMinMiles(r, cls) {
+    // ANA自社便はシーズン別オブジェクト
+    if (r.source === 'ANA自社便') {
+      const obj = r[cls];
+      if (!obj) return null;
+      const vals = [obj.low, obj.regular, obj.high].filter(v => v != null);
+      return vals.length ? Math.min(...vals) : null;
+    }
+    return r[cls] ?? null;
+  }
+
+  function renderMilesResults(budget, milesType, cls) {
+    const mainEl = document.getElementById('mainContent');
+    const targetClasses = cls === 'all' ? classes : [cls];
+
+    // 全ルートをフラットに展開
+    const allRoutes = [];
+    DB.ana_routes.forEach(r => {
+      if (r.direction !== '往復') return;
+      if (milesType === 'ANAマイル' && r.miles_type !== 'ANAマイル') return;
+      if (milesType === 'JALマイル' && r.miles_type !== 'JALマイル') return;
+      allRoutes.push({ r, source: 'ANA自社便' });
+    });
+    DB.partner_routes.forEach(r => {
+      if (milesType !== '両方' && r.miles_type !== milesType) return;
+      allRoutes.push({ r, source: '提携航空会社' });
+    });
+    DB.amex_routes.forEach(r => {
+      allRoutes.push({ r, source: 'Amex転送' });
+    });
+
+    // 都市ごとに最低マイルを集計
+    const cityResults = {};
+    allRoutes.forEach(({ r, source }) => {
+      const city = r.city;
+      if (!city || city === 'NaN') return;
+      targetClasses.forEach(c => {
+        const m = getMinMiles(r, c);
+        if (m == null || m > budget) return;
+        if (!cityResults[city]) cityResults[city] = { city, country: r.country, entries: [] };
+        cityResults[city].entries.push({ r, source, cls: c, miles: m });
+      });
+    });
+
+    const cities = Object.values(cityResults).sort((a, b) => {
+      const minA = Math.min(...a.entries.map(e => e.miles));
+      const minB = Math.min(...b.entries.map(e => e.miles));
+      return minA - minB;
+    });
+
+    if (!cities.length) {
+      mainEl.innerHTML = `<div class="empty-state"><div class="icon">😔</div><p>${budget.toLocaleString()}マイルで乗れる路線が見つかりませんでした。<br>マイル数を増やして再検索してみてください。</p></div>`;
+      setTimeout(() => mainEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+      return;
+    }
+
+    let html = `<div class="destination-title">✈ ${budget.toLocaleString()}マイルで行ける目的地 <span class="count-badge">${cities.length}都市</span></div>`;
+    html += `<p style="font-size:0.82rem;color:#718096;margin-bottom:1rem">※ Low〜Highシーズンの最低マイル数で絞り込んでいます</p>`;
+
+    cities.forEach(({ city, country, entries }) => {
+      const minMiles = Math.min(...entries.map(e => e.miles));
+      // クラスごとに最小マイルをまとめる
+      const byClass = {};
+      entries.forEach(e => {
+        if (!byClass[e.cls] || e.miles < byClass[e.cls].miles) byClass[e.cls] = e;
+      });
+
+      html += `<div class="card" style="margin-bottom:0.7rem">
+        <div class="card-header">
+          <span style="font-size:1.1rem;font-weight:700;color:#2d3748">📍 ${city}</span>
+          ${country ? `<span style="font-size:0.8rem;color:#a0aec0">${country}</span>` : ''}
+          <span class="count-badge" style="margin-left:auto">${minMiles.toLocaleString()}マイル〜</span>
+        </div>
+        <div class="miles-grid">`;
+      targetClasses.forEach(c => {
+        const entry = byClass[c];
+        html += `<div class="miles-cell ${entry ? 'highlight' : ''}">
+          <div class="miles-class">${classLabel[c]}</div>
+          ${entry ? `<div class="miles-val">${entry.miles.toLocaleString()}<small style="font-size:0.65rem;font-weight:400"> マイル</small></div><div class="miles-season" style="font-size:0.65rem;color:#718096">${entry.source}</div>` : '<div class="miles-val na">—</div>'}
+        </div>`;
+      });
+      html += `</div>
+        <button class="search-btn" style="margin-top:0.5rem;font-size:0.85rem;padding:0.5rem;" onclick="
+          document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+          document.querySelector('[data-tab=dest]').classList.add('active');
+          document.getElementById('tabDest').classList.remove('hidden');
+          document.getElementById('tabMiles').classList.add('hidden');
+          document.getElementById('searchInput').value='${city}';
+          selectedCity='${city}';
+          document.getElementById('searchBtn').disabled=false;
+          renderResults();
+        ">詳しく見る →</button>
+      </div>`;
+    });
+
+    mainEl.innerHTML = html;
+    setTimeout(() => mainEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  }
 })();
 
 // ===== 用語集モーダル =====
