@@ -503,7 +503,7 @@
 <div id="tosOverlay">
   <div id="tosBox">
     <div class="tos-header">
-      <h2>✈ マイル活 特典航空券シミュレーター</h2>
+      <h2>マイルで行く<br>特典航空券シミュレーター</h2>
       <p>ご利用の前に、利用規約をお読みください</p>
     </div>
     <div class="tos-body">
@@ -651,27 +651,46 @@ function dateBetween(m1,d1,m2,d2, checkM, checkD) {
   return t >= s && t <= e;
 }
 
-// 任意の月日でシーズンを計算する汎用関数
-function calcSeason(m, d) {
+// ゾーングループ判定
+function getZoneGroup(zone) {
+  const z = (zone || '').toUpperCase();
+  if (z.includes('ZONE 2')||z.includes('ZONE 3')||z.includes('ZONE 4')) return 'A';
+  if (z.includes('ZONE 5')) return 'B';
+  return 'C'; // Zone 6, 7 または不明 → 北米・欧州
+}
+
+// ゾーングループ別シーズン計算（2026年度）
+function calcSeason(m, d, zone) {
   const db = (m1,d1,m2,d2) => dateBetween(m1,d1,m2,d2,m,d);
-  const lo = db(1,5,2,13)||db(4,1,4,28)||db(5,11,6,30);
-  const hi = db(1,1,1,4)||db(4,29,5,10)||db(7,18,8,23)||db(12,21,12,31);
-  if (hi) return 'High';
-  if (lo) return 'Low';
-  return 'Regular';
+  const g = getZoneGroup(zone);
+
+  if (g === 'A') {
+    // グループA: 韓国・中国・台湾・東南アジア・南アジア
+    const lo = db(1,4,1,27)||db(4,1,4,23)||db(5,12,6,30)||db(12,1,12,14);
+    const hi = db(1,1,1,3)||db(4,24,5,11)||db(7,18,8,24)||db(12,15,12,31);
+    if (hi) return 'High'; if (lo) return 'Low'; return 'Regular';
+  }
+  if (g === 'B') {
+    // グループB: ハワイ・オセアニア
+    const lo = db(1,4,2,28)||db(4,1,4,23)||db(5,12,5,31);
+    const hi = db(1,1,1,3)||db(4,24,5,11)||db(7,18,8,24)||db(12,15,12,31);
+    if (hi) return 'High'; if (lo) return 'Low'; return 'Regular';
+  }
+  // グループC: 北米・ヨーロッパ（デフォルト）
+  const lo = db(1,6,2,28)||db(4,1,4,28);
+  const hi = db(1,1,1,5)||db(4,29,5,9)||db(7,16,8,23)||db(12,19,12,31);
+  if (hi) return 'High'; if (lo) return 'Low'; return 'Regular';
 }
 
 function getCurrentSeason(airline, routeType) {
-  return calcSeason(MM, DD);
+  return calcSeason(MM, DD); // 引数なし＝グループC（長距離）を基準
 }
 
 function getSeasonForRoute(r) {
   // シーズンボタンが手動選択されている場合はそれを優先
   if (activeSeason !== 'auto') return activeSeason;
   if (r.source === 'ANA自社便') {
-    const z = r.zone || '';
-    const isAsia = z.includes('Zone 2')||z.includes('Zone 3')||z.includes('Zone 4');
-    return getCurrentSeason('ANA', isAsia ? 'アジア' : '北米欧州');
+    return calcSeason(MM, DD, r.zone); // ゾーンを直接渡してグループ別判定
   }
   return 'Regular';
 }
@@ -1010,13 +1029,22 @@ function renderResults() {
     html += `<div class="tip-box">💡 <strong>★ 燃油サーチャージ無し</strong>の便があります！マイル＋空港税のみで搭乗できます。</div>`;
   }
 
-  // シーズンカレンダー（ANAベース）
+  // シーズンカレンダー（ANA ゾーン別）
   const monthNames = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
   const seasonColor = { Low:'cal-low', Regular:'cal-reg', High:'cal-high' };
   const seasonLabel = { Low:'Low', Regular:'Reg', High:'High' };
-  let calHtml = '<div class="season-cal"><div class="season-cal-title">📅 月別シーズンカレンダー（ANAベース）</div><div class="season-cal-grid">';
+  // 検索結果のゾーンを代表値として使用
+  const repZone = anaMatches.length ? (anaMatches[0].zone || '') : '';
+  const repGroup = getZoneGroup(repZone);
+  const groupNames = {
+    A: 'グループA（韓国・中国・台湾・東南アジア・南アジア）',
+    B: 'グループB（ハワイ・オセアニア）',
+    C: 'グループC（北米・ヨーロッパ・中東・中南米）'
+  };
+  const calGroupLabel = anaMatches.length ? groupNames[repGroup] : groupNames['C'];
+  let calHtml = `<div class="season-cal"><div class="season-cal-title">📅 ANA シーズンカレンダー ／ ${calGroupLabel}</div><div class="season-cal-grid">`;
   for (let mo = 1; mo <= 12; mo++) {
-    const s = calcSeason(mo, 15); // 各月15日で判定
+    const s = calcSeason(mo, 15, repZone); // 各月15日・該当ゾーンで判定
     calHtml += `<div class="cal-cell ${seasonColor[s]}"><div class="cal-month">${monthNames[mo-1]}</div><div class="cal-season">${seasonLabel[s]}</div></div>`;
   }
   calHtml += '</div><div class="season-cal-legend"><span class="cal-legend cal-low">🟢 Low（閑散期・お得）</span><span class="cal-legend cal-reg">🔵 Regular（通常）</span><span class="cal-legend cal-high">🔴 High（繁忙期）</span></div></div>';
