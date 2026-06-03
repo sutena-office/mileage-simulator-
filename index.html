@@ -127,10 +127,26 @@
   .tip-box { background: #fffbeb; border: 1px solid #fbd38d; border-radius: 12px; padding: 1rem 1.2rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: #744210; line-height: 1.7; }
   .tip-box strong { color: #c05621; }
 
-  .search-tabs { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1rem; }
+  .search-tabs { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1rem; flex-wrap: wrap; }
   .tab-btn { background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.4); color: white; border-radius: 24px; padding: 0.45rem 1.1rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
   .tab-btn.active { background: white; color: #2b6cb0; border-color: white; }
   .tab-panel { max-width: 640px; margin: 0 auto; }
+
+  /* エリア検索 */
+  .area-search-box { background: rgba(255,255,255,0.12); border-radius: 16px; padding: 1.2rem 1.4rem; backdrop-filter: blur(6px); }
+  .area-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+  .area-btn { background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.35); color: white; border-radius: 12px; padding: 0.6rem 0.4rem; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.2s; text-align: center; line-height: 1.4; }
+  .area-btn:hover { background: rgba(255,255,255,0.25); }
+  .area-btn.active { background: white; color: #2b6cb0; border-color: white; }
+  .area-drill-section { margin-top: 1rem; }
+  .area-drill-label { font-size: 0.72rem; color: rgba(255,255,255,0.75); font-weight: 700; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
+  .country-chips, .city-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .country-chip { background: rgba(255,255,255,0.18); border: 1.5px solid rgba(255,255,255,0.4); color: white; border-radius: 20px; padding: 0.3rem 0.8rem; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.18s; white-space: nowrap; }
+  .country-chip:hover { background: rgba(255,255,255,0.3); }
+  .country-chip.active { background: white; color: #2b6cb0; border-color: white; }
+  .city-chip { background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.3); color: rgba(255,255,255,0.9); border-radius: 20px; padding: 0.3rem 0.8rem; font-size: 0.76rem; font-weight: 600; cursor: pointer; transition: all 0.18s; white-space: nowrap; }
+  .city-chip:hover { background: rgba(255,255,255,0.28); color: white; }
+  .city-chip.active { background: linear-gradient(135deg,#48bb78,#38a169); border-color: #48bb78; color: white; }
 
   .miles-search-box { background: rgba(255,255,255,0.12); border-radius: 16px; padding: 1.2rem 1.4rem; backdrop-filter: blur(6px); }
   .miles-search-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 0; }
@@ -370,6 +386,10 @@
   @media (max-width: 600px) {
     #glossaryBtn { top: 0.7rem; right: 0.7rem; font-size: 0.75rem; padding: 0.4rem 0.8rem; }
     .glossary-body { padding: 1rem 1rem 1.2rem; }
+  }
+  @media (max-width: 600px) {
+    .area-grid { grid-template-columns: repeat(2, 1fr); }
+    .area-btn { font-size: 0.72rem; padding: 0.5rem 0.3rem; }
   }
 
   /* ===== 利用規約オーバーレイ ===== */
@@ -675,6 +695,7 @@
 
   <div class="search-tabs">
     <button class="tab-btn active" data-tab="dest">🔍 行き先から検索</button>
+    <button class="tab-btn" data-tab="area">🌍 エリアから探す</button>
     <button class="tab-btn" data-tab="miles">✈ 保有マイルから探す</button>
   </div>
 
@@ -690,7 +711,22 @@
   </div>
   </div>
 
-  <!-- タブ②：保有マイル逆引き -->
+  <!-- タブ②：エリアから探す -->
+  <div id="tabArea" class="tab-panel hidden">
+    <div class="area-search-box">
+      <div class="area-grid" id="areaGrid"></div>
+      <div class="area-drill-section hidden" id="countrySection">
+        <div class="area-drill-label">▼ 国を選んでください</div>
+        <div class="country-chips" id="countryChips"></div>
+      </div>
+      <div class="area-drill-section hidden" id="citySection">
+        <div class="area-drill-label">▼ 都市を選んでください</div>
+        <div class="city-chips" id="cityChips"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- タブ③：保有マイル逆引き -->
   <div id="tabMiles" class="tab-panel hidden">
     <div class="miles-search-box">
       <div class="miles-search-row">
@@ -2072,11 +2108,136 @@ document.getElementById('searchBtn').addEventListener('click', () => {
       btn.classList.add('active');
       const tab = btn.dataset.tab;
       document.getElementById('tabDest').classList.toggle('hidden', tab !== 'dest');
+      document.getElementById('tabArea').classList.toggle('hidden', tab !== 'area');
       document.getElementById('tabMiles').classList.toggle('hidden', tab !== 'miles');
-      // 結果エリアをリセット
       document.getElementById('mainContent').innerHTML = '';
     });
   });
+})();
+
+// ===== エリアから探す =====
+(function() {
+  // ── エリア → 国名マッピング（DBのcountryフィールドと完全一致させる） ──
+  const AREA_MAP = [
+    { label: '🗼 東アジア',    countries: ['韓国','中国','台湾','香港','モンゴル'] },
+    { label: '🌏 東南アジア',  countries: ['タイ','ベトナム','シンガポール','マレーシア','インドネシア','フィリピン','カンボジア','ラオス','ミャンマー'] },
+    { label: '🏔 南アジア',    countries: ['インド','スリランカ','バングラデシュ','パキスタン','モルディブ'] },
+    { label: '🕌 中東',        countries: ['UAE','カタール','サウジアラビア','バーレーン','クウェート','オマーン','ヨルダン','イスラエル','レバノン','トルコ'] },
+    { label: '🏛 ヨーロッパ',  countries: ['イギリス','フランス','ドイツ','イタリア','スペイン','オランダ','ベルギー','スイス','オーストリア','スウェーデン','ノルウェー','デンマーク','フィンランド','ポルトガル','ギリシャ','チェコ','ポーランド','ハンガリー','クロアチア','ルーマニア','ブルガリア','スロバキア','スロベニア','セルビア','ボスニア','モンテネグロ','北マケドニア','アルバニア','アイスランド','アイルランド','ルクセンブルク','エストニア','ラトビア','リトアニア','ロシア'] },
+    { label: '🏝 ハワイ・太平洋', countries: ['アメリカ領グアム','北マリアナ諸島（アメリカ）','フィジー','ニューカレドニア','トンガ','サモア','クック諸島','バヌアツ','ソロモン諸島','パラオ','パプアニューギニア'], special: 'hawaii' },
+    { label: '🦘 オセアニア',  countries: ['オーストラリア','ニュージーランド'] },
+    { label: '🗽 北米',        countries: ['アメリカ','カナダ','メキシコ'] },
+    { label: '🌴 中米・カリブ', countries: ['コスタリカ','パナマ','グアテマラ','キューバ','ジャマイカ','バハマ','バルバドス','プエルトリコ','トリニダード','ドミニカ共和国','アンティグア','セントルシア','キュラソー（オランダ王国）','アルバ（オランダ王国）','シント','バミューダ','ケイマン諸島','グアドループ（フランス海外県）','マルティニーク（フランス海外県）'] },
+    { label: '🌎 南米',        countries: ['ブラジル','アルゼンチン','チリ','ペルー','コロンビア','エクアドル','ウルグアイ','ボリビア','パラグアイ','スリナム','ガイアナ','フランス領ギアナ'] },
+    { label: '🌍 中央アジア',  countries: ['カザフスタン','ウズベキスタン','キルギスタン','トルクメニスタン','アゼルバイジャン','ジョージア','アルメニア'] },
+    { label: '🦁 アフリカ',    countries: ['南アフリカ','ケニア','エチオピア','エジプト','モロッコ','ナイジェリア','ガーナ','タンザニア','ウガンダ','ルワンダ','ジンバブエ','モザンビーク','ザンビア','アンゴラ','ナミビア','セネガル','コートジボワール','カメルーン','ガボン','コンゴ共和国','コンゴ民主共和国','マダガスカル','モーリシャス','セーシェル','チュニジア','アルジェリア','マリ','ガンビア','ギニア','トーゴ','ベナン','ニジェール','シエラレオネ','リベリア','ブルキナファソ','ブルンジ'] },
+  ];
+
+  // cityMapから国ごとの都市リストを構築
+  function getCitiesForCountry(countryKey) {
+    // ハワイ特別処理
+    if (countryKey === '__hawaii__') {
+      return Object.keys(cityMap).filter(c => {
+        const airports = [...cityMap[c].airports];
+        return airports.some(a => ['HNL','KOA'].includes(a));
+      });
+    }
+    return Object.keys(cityMap).filter(c => {
+      const info = cityMap[c];
+      if (!info.country) return false;
+      // 前方一致 or 完全一致（「ボスニア・ヘルツェゴビナ」→「ボスニア」など）
+      return info.country === countryKey || info.country.startsWith(countryKey);
+    }).sort();
+  }
+
+  // DBにある国かどうか確認（都市が1件以上あるか）
+  function hasData(countryKey) {
+    return getCitiesForCountry(countryKey).length > 0;
+  }
+
+  let activeArea = null, activeCountry = null;
+
+  // エリアボタン生成
+  const areaGrid = document.getElementById('areaGrid');
+  AREA_MAP.forEach((area, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'area-btn';
+    btn.textContent = area.label;
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.area-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeArea = idx;
+      activeCountry = null;
+      renderCountries(area);
+      document.getElementById('citySection').classList.add('hidden');
+    });
+    areaGrid.appendChild(btn);
+  });
+
+  function renderCountries(area) {
+    const section = document.getElementById('countrySection');
+    const chips = document.getElementById('countryChips');
+    chips.innerHTML = '';
+
+    // ハワイ・太平洋エリア：「ハワイ」を先頭に追加
+    const countries = area.special === 'hawaii'
+      ? [{ key: '__hawaii__', label: '🌺 ハワイ' }, ...area.countries.filter(c => hasData(c)).map(c => ({ key: c, label: c }))]
+      : area.countries.filter(c => hasData(c)).map(c => ({ key: c, label: c }));
+
+    if (countries.length === 0) {
+      chips.innerHTML = '<span style="color:rgba(255,255,255,0.6);font-size:0.8rem">現在データがありません</span>';
+    } else {
+      countries.forEach(({ key, label }) => {
+        const chip = document.createElement('button');
+        chip.className = 'country-chip';
+        chip.textContent = label;
+        chip.addEventListener('click', () => {
+          document.querySelectorAll('.country-chip').forEach(b => b.classList.remove('active'));
+          chip.classList.add('active');
+          activeCountry = key;
+          renderCities(key);
+        });
+        chips.appendChild(chip);
+      });
+    }
+    section.classList.remove('hidden');
+  }
+
+  function renderCities(countryKey) {
+    const section = document.getElementById('citySection');
+    const chips = document.getElementById('cityChips');
+    chips.innerHTML = '';
+
+    const cities = getCitiesForCountry(countryKey);
+    if (cities.length === 0) {
+      chips.innerHTML = '<span style="color:rgba(255,255,255,0.6);font-size:0.8rem">データなし</span>';
+    } else {
+      cities.forEach(city => {
+        const chip = document.createElement('button');
+        chip.className = 'city-chip';
+        // 空港コードも表示
+        const codes = [...cityMap[city].airports].filter(a => a && a !== 'NaN' && /^[A-Z]{3}$/.test(a)).join('/');
+        chip.innerHTML = `${city}${codes ? `<span style="font-size:0.68rem;opacity:0.75;margin-left:4px">${codes}</span>` : ''}`;
+        chip.addEventListener('click', () => {
+          document.querySelectorAll('.city-chip').forEach(b => b.classList.remove('active'));
+          chip.classList.add('active');
+          // 行き先タブに切り替えて検索実行
+          selectedCity = city;
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          document.querySelector('[data-tab=dest]').classList.add('active');
+          document.getElementById('tabDest').classList.remove('hidden');
+          document.getElementById('tabArea').classList.add('hidden');
+          document.getElementById('tabMiles').classList.add('hidden');
+          document.getElementById('searchInput').value = city;
+          document.getElementById('searchBtn').disabled = false;
+          renderResults();
+          setTimeout(() => document.getElementById('mainContent').scrollIntoView({ behavior:'smooth', block:'start' }), 100);
+        });
+        chips.appendChild(chip);
+      });
+    }
+    section.classList.remove('hidden');
+  }
 })();
 
 // ===== マイル逆引き検索 =====
