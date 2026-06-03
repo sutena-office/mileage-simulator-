@@ -132,6 +132,21 @@
   .tab-btn.active { background: white; color: #2b6cb0; border-color: white; }
   .tab-panel { max-width: 640px; margin: 0 auto; }
 
+  /* ルート検索（発地・経由地・着地） */
+  .route-search-box { background: rgba(255,255,255,0.12); border-radius: 16px; padding: 1.2rem 1.4rem; backdrop-filter: blur(6px); }
+  .route-top-row { display: flex; gap: 0.8rem; }
+  .route-field-block { flex: 1; display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
+  .route-field-lbl { font-size: 0.72rem; font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 0.05em; }
+  .dep-chips-inline { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+  .dep-chip-inline { background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.35); color: white; border-radius: 20px; padding: 0.25rem 0.6rem; font-size: 0.74rem; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+  .dep-chip-inline:hover { background: rgba(255,255,255,0.28); }
+  .dep-chip-inline.active { background: white; color: #2b6cb0; border-color: white; }
+  .via-input-wrap { position: relative; width: 100%; }
+  .via-text-input { width: 100%; background: rgba(255,255,255,0.92); border: none; border-radius: 10px; padding: 0.55rem 2rem 0.55rem 0.8rem; font-size: 0.9rem; font-weight: 600; color: #2d3748; outline: none; -webkit-appearance: none; touch-action: manipulation; }
+  .via-text-input::placeholder { color: #a0aec0; font-weight: 400; font-size: 0.82rem; }
+  .via-clear-btn { position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: #a0aec0; cursor: pointer; font-size: 0.85rem; padding: 0.2rem 0.3rem; line-height: 1; }
+  .via-clear-btn:hover { color: #718096; }
+
   /* エリア検索 */
   .area-search-box { background: rgba(255,255,255,0.12); border-radius: 16px; padding: 1.2rem 1.4rem; backdrop-filter: blur(6px); }
   .area-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
@@ -390,6 +405,7 @@
   @media (max-width: 600px) {
     .area-grid { grid-template-columns: repeat(2, 1fr); }
     .area-btn { font-size: 0.72rem; padding: 0.5rem 0.3rem; }
+    .route-top-row { flex-direction: column; gap: 0.6rem; }
   }
 
   /* ===== 利用規約オーバーレイ ===== */
@@ -699,16 +715,41 @@
     <button class="tab-btn" data-tab="miles">✈ 保有マイルから探す</button>
   </div>
 
-  <!-- タブ①：行き先検索（既存） -->
+  <!-- タブ①：行き先検索 -->
   <div id="tabDest" class="tab-panel">
-    <div class="search-box">
-    <div class="search-input-wrap">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="searchInput" placeholder="都市名・国名・空港コード（例：パリ、アメリカ、HNL）" autocomplete="off">
-      <div class="suggest-list hidden" id="suggestList"></div>
+    <div class="route-search-box">
+      <!-- 出発地 + 経由地 -->
+      <div class="route-top-row">
+        <div class="route-field-block">
+          <div class="route-field-lbl">✈ 出発地</div>
+          <div class="dep-chips-inline" id="depChipsInline">
+            <button class="dep-chip-inline active" data-dep="all">すべて</button>
+            <button class="dep-chip-inline" data-dep="HND/NRT">🗼 東京</button>
+            <button class="dep-chip-inline" data-dep="KIX">大阪</button>
+            <button class="dep-chip-inline" data-dep="NGO">名古屋</button>
+            <button class="dep-chip-inline" data-dep="FUK">福岡</button>
+          </div>
+        </div>
+        <div class="route-field-block">
+          <div class="route-field-lbl">🔄 経由地（任意）</div>
+          <div class="via-input-wrap">
+            <input type="text" id="viaInput" class="via-text-input" placeholder="例：ソウル、シンガポール" autocomplete="off">
+            <button id="viaClearBtn" class="via-clear-btn hidden">✕</button>
+            <div class="suggest-list hidden" id="viaSuggestList"></div>
+          </div>
+        </div>
+      </div>
+      <!-- 着地 -->
+      <div class="route-field-lbl" style="margin-top:0.8rem">📍 着地（必須）</div>
+      <div class="search-box" style="max-width:none;margin:0;margin-top:0.3rem">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="都市名・国名・空港コード（例：パリ、アメリカ、HNL）" autocomplete="off">
+          <div class="suggest-list hidden" id="suggestList"></div>
+        </div>
+        <button id="searchBtn" class="search-btn" disabled>検索</button>
+      </div>
     </div>
-    <button id="searchBtn" class="search-btn" disabled>検索</button>
-  </div>
   </div>
 
   <!-- タブ②：エリアから探す -->
@@ -958,6 +999,14 @@ const allCities = Object.keys(cityMap).filter(c =>
   !c.startsWith('Zone') && c !== '(自社便なし)' && !c.includes('各都市') && !c.includes('各地')
 ).sort();
 
+// 経由地サジェスト用リスト（transit_routes の via1/via2 から生成）
+const viaSet = new Set();
+(DB.transit_routes || []).forEach(r => {
+  if (r.via1) viaSet.add(normCityKey(r.via1));
+  if (r.via2) viaSet.add(normCityKey(r.via2));
+});
+const allViaCities = [...viaSet].filter(Boolean).sort();
+
 // Season display
 function showSeason() {
   // autoの場合：検索済みならそのゾーン、未検索ならグループC（長距離）基準
@@ -981,6 +1030,7 @@ function showSeason() {
 
 // ★ 変数宣言を showSeason() より先に置く（参照エラー防止）
 let selectedCity = null;
+let selectedVia = null;   // 経由地フィルター（null = 指定なし）
 let activeClass = 'all';
 let activeDir = '往復';
 let activeSeason = 'auto'; // 'auto' | 'Low' | 'Regular' | 'High'
@@ -1045,6 +1095,58 @@ searchInput.addEventListener('input', () => {
 
 document.addEventListener('click', e => {
   if (!e.target.closest('.search-box')) suggestList.classList.add('hidden');
+  if (!e.target.closest('.via-input-wrap')) document.getElementById('viaSuggestList').classList.add('hidden');
+});
+
+// ─── 経由地 入力 ──────────────────────────────────────────────────────
+const viaInput = document.getElementById('viaInput');
+const viaSuggestList = document.getElementById('viaSuggestList');
+const viaClearBtn = document.getElementById('viaClearBtn');
+
+viaInput.addEventListener('input', () => {
+  const q = viaInput.value.trim();
+  // 文字が変わったら選択リセット
+  if (selectedVia && q !== selectedVia) {
+    selectedVia = null;
+    if (selectedCity) renderResults();
+  }
+  viaClearBtn.classList.toggle('hidden', !q);
+  if (!q) { viaSuggestList.classList.add('hidden'); return; }
+  const matches = allViaCities.filter(c => c.includes(q)).slice(0, 20);
+  if (!matches.length) { viaSuggestList.classList.add('hidden'); return; }
+  viaSuggestList.innerHTML = matches.map(c =>
+    `<div class="suggest-item" data-via="${c}"><span>${c}</span></div>`
+  ).join('');
+  viaSuggestList.classList.remove('hidden');
+  viaSuggestList.querySelectorAll('.suggest-item').forEach(el => {
+    el.addEventListener('click', () => {
+      selectedVia = el.dataset.via;
+      viaInput.value = selectedVia;
+      viaSuggestList.classList.add('hidden');
+      viaClearBtn.classList.remove('hidden');
+      if (selectedCity) renderResults();
+    });
+  });
+});
+
+viaClearBtn.addEventListener('click', () => {
+  viaInput.value = '';
+  selectedVia = null;
+  viaClearBtn.classList.add('hidden');
+  viaSuggestList.classList.add('hidden');
+  if (selectedCity) renderResults();
+});
+
+// ─── 発地インラインチップ（depFilter と同期）────────────────────────
+document.getElementById('depChipsInline').addEventListener('click', e => {
+  const btn = e.target.closest('.dep-chip-inline');
+  if (!btn) return;
+  activeDeparture = btn.dataset.dep;
+  document.querySelectorAll('.dep-chip-inline').forEach(b =>
+    b.classList.toggle('active', b.dataset.dep === activeDeparture));
+  document.querySelectorAll('#depFilter .btn-filter').forEach(b =>
+    b.classList.toggle('active', b.dataset.val === activeDeparture));
+  if (selectedCity) renderResults();
 });
 
 // Filter buttons
@@ -1101,6 +1203,9 @@ document.getElementById('depFilter').addEventListener('click', e => {
   document.querySelectorAll('#depFilter .btn-filter').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   activeDeparture = btn.dataset.val;
+  // タブ①内のインラインチップも同期
+  document.querySelectorAll('.dep-chip-inline').forEach(b =>
+    b.classList.toggle('active', b.dataset.dep === activeDeparture));
   if (selectedCity) renderResults();
 });
 
@@ -1589,20 +1694,30 @@ function renderResults() {
     return aliases.some(a => rBase === a || rBase.includes(a) || rCity.includes(a));
   }
 
-  const anaMatches = DB.ana_routes.filter(r => {
+  // 経由地が指定されている場合は直行便（ANA/提携/Amex）を非表示にして経由便のみ表示
+  const anaMatches = selectedVia ? [] : DB.ana_routes.filter(r => {
     if (r.city !== city || r.direction !== activeDir) return false;
     if (activeDeparture === 'all') return true;
     const dep = r.departure || 'HND/NRT';
     return dep === activeDeparture || dep.includes(activeDeparture);
   });
-  const partnerMatches = DB.partner_routes.filter(r => {
+  const partnerMatches = selectedVia ? [] : DB.partner_routes.filter(r => {
     if (!cityMatch(r.city)) return false;
     if (activeDeparture === 'all') return true;
     const dep = r.departure || 'HND/NRT';
     return dep === activeDeparture || dep.includes(activeDeparture);
   });
-  const amexMatches = DB.amex_routes.filter(r => cityMatch(r.city));
-  const transitMatches = (DB.transit_routes || []).filter(r => cityMatch(r.city));
+  const amexMatches = selectedVia ? [] : DB.amex_routes.filter(r => cityMatch(r.city));
+  const transitMatches = (DB.transit_routes || []).filter(r => {
+    if (!cityMatch(r.city)) return false;
+    // 経由地フィルター
+    if (selectedVia) {
+      const v1 = r.via1 ? normCityKey(r.via1) : '';
+      const v2 = r.via2 ? normCityKey(r.via2) : '';
+      if (v1 !== selectedVia && v2 !== selectedVia) return false;
+    }
+    return true;
+  });
 
   const total = anaMatches.length + partnerMatches.length + amexMatches.length + transitMatches.length;
 
@@ -1619,7 +1734,8 @@ function renderResults() {
     return false;
   }
   if (total === 0) {
-    mainEl.innerHTML = `<div class="empty-state"><div class="icon">😔</div><p>「${city}」の路線データが見つかりませんでした。<br>別のキーワードで検索してみてください。</p></div>`;
+    const viaMsg = selectedVia ? `（経由: ${selectedVia}）` : '';
+    mainEl.innerHTML = `<div class="empty-state"><div class="icon">😔</div><p>「${city}」${viaMsg}の路線データが見つかりませんでした。<br>別のキーワードで検索してみてください。</p></div>`;
     return;
   }
 
@@ -1665,7 +1781,10 @@ function renderResults() {
     amexMatches.forEach((r,i) => evalCostRoute(r, 'a-'+i));
   }
 
-  let html = `<div class="destination-title">📍 ${city} <span class="count-badge">${total}件のルート</span></div>`;
+  const viaBadge = selectedVia
+    ? `<span class="count-badge" style="background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd">🔄 経由: ${selectedVia}</span>`
+    : '';
+  let html = `<div class="destination-title">📍 ${city} ${viaBadge}<span class="count-badge">${total}件のルート</span></div>`;
 
   // Tip for this destination
   const hasYQFree = [...partnerMatches, ...amexMatches].some(r => r.yq_free);
