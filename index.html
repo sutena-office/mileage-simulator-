@@ -477,6 +477,43 @@
   #tosAgreeBtn:not(:disabled):hover {
     transform: translateY(-1px); box-shadow: 0 6px 20px rgba(43,108,176,0.5);
   }
+
+  /* ===== 特商法オーバーレイ ===== */
+  #tctOverlay {
+    display: none; position: fixed; inset: 0; z-index: 9998;
+    background: rgba(0,0,0,0.55); align-items: center; justify-content: center; padding: 1rem;
+  }
+  #tctOverlay.open { display: flex; }
+  #tctBox {
+    background: white; border-radius: 16px;
+    max-width: 560px; width: 100%;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+    display: flex; flex-direction: column; max-height: 90vh;
+  }
+  #tctBox .tct-header {
+    background: linear-gradient(135deg, #1a365d, #2b6cb0);
+    color: white; padding: 1.2rem 1.6rem; border-radius: 16px 16px 0 0;
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  #tctBox .tct-header h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.2rem; }
+  #tctBox .tct-header p  { font-size: 0.78rem; opacity: 0.85; }
+  #tctClose {
+    background: rgba(255,255,255,0.2); border: none; color: white;
+    border-radius: 50%; width: 28px; height: 28px; cursor: pointer;
+    font-size: 0.9rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  #tctClose:hover { background: rgba(255,255,255,0.35); }
+  #tctBox .tct-body { padding: 1.2rem 1.6rem 1.4rem; overflow-y: auto; }
+  #tctBox .tct-intro { font-size: 0.8rem; color: #718096; background: #f7fafc; border-radius: 8px; padding: 0.7rem 1rem; margin-bottom: 1rem; line-height: 1.6; }
+  .tct-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  .tct-table th, .tct-table td { padding: 0.55rem 0.8rem; border: 1px solid #e2e8f0; vertical-align: top; }
+  .tct-table th { background: #edf2f7; color: #4a5568; font-weight: 700; width: 38%; white-space: nowrap; }
+  .tct-table td { color: #2d3748; line-height: 1.6; }
+  .tct-table tr:nth-child(even) td { background: #f7fafc; }
+  .tct-placeholder { color: #e53e3e; font-weight: 700; }
+  #tctBox .tct-note { font-size: 0.75rem; color: #a0aec0; margin-top: 0.8rem; line-height: 1.6; }
+  .footer-link { background: none; border: none; color: #a0aec0; cursor: pointer; font-size: 0.75rem; text-decoration: underline; padding: 0; }
+  .footer-link:hover { color: #718096; }
 </style>
 </head>
 <body>
@@ -662,6 +699,92 @@
       </div>
 
     </div><!-- /glossary-body -->
+  </div>
+</div>
+
+<!-- ===== 特定商取引法に基づく表記 オーバーレイ ===== -->
+<div id="tctOverlay">
+  <div id="tctBox">
+    <div class="tct-header">
+      <div>
+        <h2>📋 特定商取引法に基づく表記</h2>
+        <p>Specified Commercial Transactions Act</p>
+      </div>
+      <button id="tctClose">✕</button>
+    </div>
+    <div class="tct-body">
+      <p class="tct-intro">
+        本サービスは無料の情報提供ツールであり、有料商品・有料サービスの販売は行っていません。
+        特定商取引法の適用外となる項目は「該当なし」と記載しています。
+      </p>
+      <table class="tct-table">
+        <tr>
+          <th>販売業者・運営者</th>
+          <td><span class="tct-placeholder">●● ／ SuTENA</span></td>
+        </tr>
+        <tr>
+          <th>運営責任者</th>
+          <td><span class="tct-placeholder">●●（代表者氏名）</span></td>
+        </tr>
+        <tr>
+          <th>所在地</th>
+          <td><span class="tct-placeholder">●●（請求があれば遅滞なく開示します）</span></td>
+        </tr>
+        <tr>
+          <th>電話番号</th>
+          <td><span class="tct-placeholder">●●（請求があれば遅滞なく開示します）</span></td>
+        </tr>
+        <tr>
+          <th>お問い合わせ先</th>
+          <td>sutena.office@gmail.com</td>
+        </tr>
+        <tr>
+          <th>サービス名</th>
+          <td>マイル活 特典航空券シミュレーター</td>
+        </tr>
+        <tr>
+          <th>サービス内容</th>
+          <td>ANAマイル・JALマイル等を活用した特典航空券の必要マイル数・付帯費用を調べる無料情報提供ツール</td>
+        </tr>
+        <tr>
+          <th>利用料金</th>
+          <td>無料（一切の料金は発生しません）</td>
+        </tr>
+        <tr>
+          <th>料金以外の費用</th>
+          <td>なし（通信費等はご利用者負担）</td>
+        </tr>
+        <tr>
+          <th>支払方法</th>
+          <td>該当なし（無料サービスのため）</td>
+        </tr>
+        <tr>
+          <th>支払時期</th>
+          <td>該当なし（無料サービスのため）</td>
+        </tr>
+        <tr>
+          <th>サービス提供時期</th>
+          <td>利用規約への同意後、即時利用可能</td>
+        </tr>
+        <tr>
+          <th>返品・キャンセル</th>
+          <td>有料取引を行っておらず、返品・キャンセルポリシーの対象外です</td>
+        </tr>
+        <tr>
+          <th>動作環境</th>
+          <td>最新のChrome・Safari・Firefox・Edge（JavaScript有効環境）</td>
+        </tr>
+        <tr>
+          <th>特記事項</th>
+          <td>本ツールは情報提供のみを目的としています。掲載のマイル数・費用は参考値であり、実際の発券時には各航空会社・マイルプログラムの公式サイトでご確認ください。本ツールを通じて航空券の予約・購入はできません。</td>
+        </tr>
+      </table>
+      <p class="tct-note">
+        ※ 赤字の項目は公開前にご自身の情報を入力してください。<br>
+        ※ 特定商取引法上、無料サービスは同法の「通信販売」に該当しない場合がありますが、
+        透明性の観点から任意で掲載しています。
+      </p>
+    </div>
   </div>
 </div>
 
@@ -862,7 +985,12 @@
   </div>
 </div>
 
-<div class="footer">データ出典：マイル数一覧_全路線_整理版（2026年5月時点）／YQ・税金は参考値。最新額は発券時に各社公式サイトでご確認ください。</div>
+<div class="footer">
+  データ出典：マイル数一覧_全路線_整理版（2026年5月時点）／YQ・税金は参考値。最新額は発券時に各社公式サイトでご確認ください。<br>
+  <span style="margin-top:0.4rem;display:inline-block">
+    <button class="footer-link" id="tctOpenBtn">特定商取引法に基づく表記</button>
+  </span>
+</div>
 
 <script>
 // ===== DATA PLACEHOLDER - will be replaced by Python =====
@@ -2215,6 +2343,23 @@ document.getElementById('searchBtn').addEventListener('click', () => {
     overlay.style.opacity = '0';
     overlay.style.transition = 'opacity 0.4s ease';
     setTimeout(() => { overlay.style.display = 'none'; }, 400);
+  });
+})();
+
+// ===== 特定商取引法に基づく表記 =====
+(function() {
+  const tctOverlay = document.getElementById('tctOverlay');
+  const tctClose   = document.getElementById('tctClose');
+  const tctOpenBtn = document.getElementById('tctOpenBtn');
+
+  tctOpenBtn.addEventListener('click', () => {
+    tctOverlay.classList.add('open');
+  });
+  tctClose.addEventListener('click', () => {
+    tctOverlay.classList.remove('open');
+  });
+  tctOverlay.addEventListener('click', e => {
+    if (e.target === tctOverlay) tctOverlay.classList.remove('open');
   });
 })();
 
