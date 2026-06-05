@@ -133,7 +133,7 @@
   .tab-panel { max-width: 640px; margin: 0 auto; }
 
   /* ルート検索（発地・経由地・着地） */
-  .route-search-box { background: rgba(255,255,255,0.12); border-radius: 16px; padding: 1.2rem 1.4rem; backdrop-filter: blur(6px); }
+  .route-search-box { background: rgba(255,255,255,0.12); border-radius: 16px; padding: 1.2rem 1.4rem; }
   .route-top-row { display: flex; gap: 0.8rem; }
   .route-field-block { flex: 1; display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
   .route-field-lbl { font-size: 0.72rem; font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 0.05em; }
@@ -1135,6 +1135,19 @@ const viaSet = new Set();
 });
 const allViaCities = [...viaSet].filter(Boolean).sort();
 
+// 地域キーワード（例: ハワイ → ホノルル・コナ）
+const REGION_KEYWORDS = {
+  'ハワイ': ['ホノルル', 'コナ'],
+};
+Object.entries(REGION_KEYWORDS).forEach(([kw, cities]) => {
+  cities.forEach(city => {
+    if (cityMap[city]) {
+      if (!cityMap[city].keywords) cityMap[city].keywords = [];
+      cityMap[city].keywords.push(kw);
+    }
+  });
+});
+
 // Season display
 function showSeason() {
   // autoの場合：検索済みならそのゾーン、未検索ならグループC（長距離）基準
@@ -1188,6 +1201,8 @@ searchInput.addEventListener('input', () => {
     if (c.includes(q)) return true;
     const info = cityMap[c];
     if (info.country && info.country.includes(q)) return true;
+    // 地域キーワード（例: ハワイ → ホノルル・コナ）
+    if (info.keywords && info.keywords.some(k => k.includes(q))) return true;
     // 空港コードでも検索（例: HNL, NRT, LAX）
     return [...info.airports].some(a => a && a !== 'NaN' && !a.startsWith('Zone') && a.toUpperCase().includes(qUp));
   }).sort((a, b) => {
