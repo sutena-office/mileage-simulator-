@@ -512,8 +512,40 @@
   .tct-table tr:nth-child(even) td { background: #f7fafc; }
   .tct-placeholder { color: #e53e3e; font-weight: 700; }
   #tctBox .tct-note { font-size: 0.75rem; color: #a0aec0; margin-top: 0.8rem; line-height: 1.6; }
-  .footer-link { background: none; border: none; color: #a0aec0; cursor: pointer; font-size: 0.75rem; text-decoration: underline; padding: 0; }
-  .footer-link:hover { color: #718096; }
+  .footer-link { background: none; border: 1px solid #cbd5e0; color: #718096; cursor: pointer; font-size: 0.75rem; text-decoration: none; padding: 0.35rem 0.8rem; border-radius: 20px; transition: all 0.18s; }
+  .footer-link:hover { border-color: #a0aec0; background: #f7fafc; color: #4a5568; }
+
+  /* ===== 利用規約・PP オーバーレイ共通 ===== */
+  .doc-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9998;
+    background: rgba(0,0,0,0.55); align-items: center; justify-content: center; padding: 1rem;
+  }
+  .doc-overlay.open { display: flex; }
+  .doc-box {
+    background: white; border-radius: 16px;
+    max-width: 560px; width: 100%;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+    display: flex; flex-direction: column; max-height: 90vh;
+  }
+  .doc-box .doc-header {
+    background: linear-gradient(135deg, #1a365d, #2b6cb0);
+    color: white; padding: 1.2rem 1.6rem; border-radius: 16px 16px 0 0;
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  .doc-box .doc-header h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.2rem; }
+  .doc-box .doc-header p  { font-size: 0.78rem; opacity: 0.85; }
+  .doc-close {
+    background: rgba(255,255,255,0.2); border: none; color: white;
+    border-radius: 50%; width: 28px; height: 28px; cursor: pointer;
+    font-size: 0.9rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .doc-close:hover { background: rgba(255,255,255,0.35); }
+  .doc-body {
+    padding: 1.2rem 1.6rem 1.4rem; overflow-y: auto;
+    font-size: 0.82rem; color: #4a5568; line-height: 1.85;
+  }
+  .doc-body h3 { font-size: 0.85rem; color: #2d3748; font-weight: 700; margin: 0.9rem 0 0.3rem; }
+  .doc-body h3:first-child { margin-top: 0; }
 </style>
 </head>
 <body>
@@ -713,62 +745,62 @@
       <button id="tctClose">✕</button>
     </div>
     <div class="tct-body">
-      <p class="tct-intro">
-        本サービスは無料の情報提供ツールであり、有料商品・有料サービスの販売は行っていません。
-        特定商取引法の適用外となる項目は「該当なし」と記載しています。
-      </p>
       <table class="tct-table">
         <tr>
-          <th>販売業者・運営者</th>
-          <td><span class="tct-placeholder">●● ／ SuTENA</span></td>
+          <th>販売業者</th>
+          <td>合同会社コスパ研究所</td>
         </tr>
         <tr>
           <th>運営責任者</th>
-          <td><span class="tct-placeholder">●●（代表者氏名）</span></td>
+          <td>大野 誠</td>
         </tr>
         <tr>
           <th>所在地</th>
-          <td><span class="tct-placeholder">●●（請求があれば遅滞なく開示します）</span></td>
+          <td>請求があれば遅滞なく開示します</td>
         </tr>
         <tr>
           <th>電話番号</th>
-          <td><span class="tct-placeholder">●●（請求があれば遅滞なく開示します）</span></td>
+          <td>請求があれば遅滞なく開示します</td>
         </tr>
         <tr>
           <th>お問い合わせ先</th>
-          <td>sutena.office@gmail.com</td>
+          <td>mile@cospa-labo.com<br>現在、お問い合わせはメールのみで対応しております。</td>
         </tr>
         <tr>
-          <th>サービス名</th>
-          <td>マイル活 特典航空券シミュレーター</td>
+          <th>販売URL</th>
+          <td><span class="tct-placeholder">●●（販売ページLPのURL）</span></td>
         </tr>
         <tr>
-          <th>サービス内容</th>
-          <td>ANAマイル・JALマイル等を活用した特典航空券の必要マイル数・付帯費用を調べる無料情報提供ツール</td>
+          <th>商品名</th>
+          <td>特典航空券シミュレーター（ポイント・マイル講座受講時は付属特典）</td>
         </tr>
         <tr>
-          <th>利用料金</th>
-          <td>無料（一切の料金は発生しません）</td>
+          <th>商品の内容</th>
+          <td>ANAマイル・JALマイル等を活用した特典航空券の取り方・使い方を学ぶオンライン講座。受講者には専用の特典航空券シミュレーター（Webアプリ）を配布します。</td>
         </tr>
         <tr>
-          <th>料金以外の費用</th>
-          <td>なし（通信費等はご利用者負担）</td>
+          <th>販売価格</th>
+          <td>ポイント・マイル講座受講の方は1年間無料<br>2年目より年間 5,500円（税込）の継続使用料のお支払いが必要となります。※販売ページに明記</td>
         </tr>
         <tr>
-          <th>支払方法</th>
-          <td>該当なし（無料サービスのため）</td>
+          <th>販売価格以外の費用</th>
+          <td>なし（インターネット接続費用等はご購入者のご負担となります）</td>
         </tr>
         <tr>
-          <th>支払時期</th>
-          <td>該当なし（無料サービスのため）</td>
+          <th>代金の支払方法</th>
+          <td>2年目以降の継続使用料：クレジットカード決済 ／ 銀行振込</td>
         </tr>
         <tr>
-          <th>サービス提供時期</th>
-          <td>利用規約への同意後、即時利用可能</td>
+          <th>代金の支払時期</th>
+          <td>2年目以降の継続使用料：使用開始後12か月目にメールにてご報告<br>2年目より継続使用料のお支払いが確認できない方はご利用できなくなります。</td>
         </tr>
         <tr>
-          <th>返品・キャンセル</th>
-          <td>有料取引を行っておらず、返品・キャンセルポリシーの対象外です</td>
+          <th>商品の提供時期</th>
+          <td>初回：ポイント・マイル講座を申込み、お振込みが確認でき次第発行<br>２年目以降：継続使用料のお振込みが確認でき次第メールにて、新しいリンクを発行</td>
+        </tr>
+        <tr>
+          <th>返品・キャンセルについて</th>
+          <td>ポイント・マイル講座を受講の方は、1年目は無料特典で付属するため必要がない方はお申し出ください。<br>2年目以降に関しては利用されない方は、継続使用料のお支払いは不要です。</td>
         </tr>
         <tr>
           <th>動作環境</th>
@@ -776,14 +808,9 @@
         </tr>
         <tr>
           <th>特記事項</th>
-          <td>本ツールは情報提供のみを目的としています。掲載のマイル数・費用は参考値であり、実際の発券時には各航空会社・マイルプログラムの公式サイトでご確認ください。本ツールを通じて航空券の予約・購入はできません。</td>
+          <td>各航空会社のホームページに記載の数値を参考にしておりますが、シュミレーターに掲載される数値に関しては当社は一切の責任を負いません。尚、本シミュレーターに掲載のマイル数・費用は参考値であり、実際の発券時には各航空会社・マイルプログラムの公式サイトでご確認ください。本ツールを通じて航空券の予約・購入はできません。購入時は各航空会社のホームページにてご購入ください。</td>
         </tr>
       </table>
-      <p class="tct-note">
-        ※ 赤字の項目は公開前にご自身の情報を入力してください。<br>
-        ※ 特定商取引法上、無料サービスは同法の「通信販売」に該当しない場合がありますが、
-        透明性の観点から任意で掲載しています。
-      </p>
     </div>
   </div>
 </div>
@@ -985,9 +1012,94 @@
   </div>
 </div>
 
+<!-- ===== 利用規約オーバーレイ（フッターから参照用） ===== -->
+<div class="doc-overlay" id="tosInfoOverlay">
+  <div class="doc-box">
+    <div class="doc-header">
+      <div>
+        <h2>📄 利用規約</h2>
+        <p>マイルシュミレーター 制定：2026年6月</p>
+      </div>
+      <button class="doc-close" id="tosInfoClose">✕</button>
+    </div>
+    <div class="doc-body">
+      <h3>第1条（前文・総則）</h3>
+      <p>本利用規約（以下「本規約」といいます）は、合同会社コスパ研究所（以下「運営者」といいます）が提供するマイルシュミレーター（以下「本サービス」といいます）の利用に関する条件を定めるものです。本サービスをご利用になる方（以下「ユーザー」といいます）は、本規約に同意したものとみなします。</p>
+      <h3>第2条（用語の定義）</h3>
+      <p>・本サービス：マイルシュミレーターのウェブサイト及びそのすべての機能<br>・ユーザー：本サービスにアクセス・利用するすべての方<br>・掲載情報：本サービスに掲載するマイル数・燃油サーチャージ・空港税・航空会社リンク等の情報<br>・外部サービス：各航空会社・マイルプログラムの公式ウェブサイト</p>
+      <h3>第3条（サービスの内容）</h3>
+      <p>本サービスは、特典航空券の発券に必要なマイル数・諸費用の参考情報を提供するシュミレーターです。<br>・本サービスへのアクセスにユーザー登録が必要です<br>・本サービスはポイ活・マイル講座をご購入いただいた方には1年目は無料で提供しています<br>・掲載情報はあくまで参考値であり、実際の発券内容を保証するものではありません<br>・特典航空券の実際の予約・発券は、各航空会社・マイルプログラムの公式サイトにて行ってください</p>
+      <h3>第4条（利用登録）</h3>
+      <p>1. 本サービスの利用を希望する者は、本規約を遵守することに同意し、かつ当社の定める情報を提供することにより、利用登録を申請することができます。</p>
+      <p>2. 当社は基準に従って登録の可否を判断し、登録を認める場合にはその旨を通知します。</p>
+      <p>3. 当社は、以下の事由に該当する場合は登録を拒否することがあります。（1）虚偽・誤記・記載漏れがあった場合　（2）未成年者等で法定代理人の同意を得ていない場合　（3）反社会的勢力等と判断した場合　（4）過去に契約違反があった場合　（5）その他当社が相当でないと判断した場合</p>
+      <h3>第5条（掲載情報に関する免責）</h3>
+      <p>・マイル数・燃油サーチャージ（YQ）・空港税等は参考情報です<br>・各社の料金改定・規約変更により掲載情報が最新でない場合があります<br>・実際の発券時の金額・条件は各航空会社の公式サイトでご確認ください<br>・本サービスの情報を参考にした結果生じた損害について運営者は責任を負いません<br>・動的価格制（SkyMiles・MileagePlus・AAdvantage等）については実際のマイル数が大幅に異なる場合があります</p>
+      <h3>第6条（禁止事項）</h3>
+      <p>・本サービスのデータ・コンテンツを無断で複製・転載・二次配布する行為<br>・本サービスへの不正アクセス・過度な負荷をかける行為<br>・商業目的での情報収集・販売行為<br>・虚偽の情報を流布し運営者または第三者の信頼を損なう行為<br>・法令または公序良俗に違反する行為<br>・その他運営者が不適切と判断する行為</p>
+      <h3>第7条（知的財産権）</h3>
+      <p>・本サービスのデザイン・ソースコード・文章・データ構造等の知的財産権は運営者または正当な権利者に帰属します<br>・航空会社名・マイルプログラム名等の商標は各社に帰属します</p>
+      <h3>第8条（外部サービスへのリンク）</h3>
+      <p>・本サービスには各航空会社・マイルプログラムの公式サイトへのリンクが含まれます<br>・リンク先の外部サービスについて運営者は責任を負いません<br>・外部サービスの利用は各サービスの利用規約に従ってください</p>
+      <h3>第9条（サービスの変更・停止・終了）</h3>
+      <p>運営者は、システム保守・天災・その他やむを得ない事情が生じた場合、事前通知なく本サービスの全部または一部を変更・停止・終了することができます。これによってユーザーに損害が生じた場合でも運営者は責任を負いません。</p>
+      <h3>第10条（免責事項）</h3>
+      <p>・本サービスの内容の正確性・完全性・最新性を保証しません<br>・本サービスの利用により生じた損害について運営者は一切の賠償責任を負いません<br>・本サービスは航空会社・マイルプログラム各社との提携・公認関係はありません</p>
+      <h3>第11条（規約の変更）</h3>
+      <p>運営者は必要に応じて本規約を変更できます。変更後は本サービス上に掲示した時点で効力を生じます。</p>
+      <h3>第12条（準拠法・管轄裁判所）</h3>
+      <p>本規約は日本法に準拠します。紛争については運営者の所在地を管轄する裁判所を第一審の専属的合意管轄裁判所とします。</p>
+      <h3>第13条（協議解決）</h3>
+      <p>本規約に定めのない事項または解釈に疑義が生じた場合は、運営者とユーザーが誠意をもって協議し解決するものとします。</p>
+      <p style="margin-top:0.8rem;font-size:0.78rem;color:#a0aec0">以上　制定：2026年6月　お問い合わせ：mile@cospa-labo.com</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== プライバシーポリシーオーバーレイ ===== -->
+<div class="doc-overlay" id="ppOverlay">
+  <div class="doc-box">
+    <div class="doc-header">
+      <div>
+        <h2>🔒 プライバシーポリシー</h2>
+        <p>マイルシュミレーター 制定：2026年6月</p>
+      </div>
+      <button class="doc-close" id="ppClose">✕</button>
+    </div>
+    <div class="doc-body">
+      <h3>第1条　事業者情報</h3>
+      <p>本ポリシーは、コスパ研究所（以下「当社」）が運営する「マイル特典航空券シミュレーター」における個人情報の取り扱いについて定めるものです。<br>お問い合わせ先：mile@cospa-labo.com</p>
+      <h3>第2条　取得する個人情報の種類</h3>
+      <p>【本人確認情報】氏名・メールアドレス・住所（市区町村）・電話番号・登録日時（自動記録）<br>【アンケート情報】貯めているマイルの種別・興味のある地域・乗りたい座席クラス・マイルを貯める手段</p>
+      <h3>第3条　取得方法</h3>
+      <p>本サービスの利用登録フォームへの直接入力により取得します。</p>
+      <h3>第4条　利用目的</h3>
+      <p>1. 本サービスへのアクセス管理（不正利用防止）<br>2. 本サービスの更新・継続利用に関するご案内（1年ごとの更新通知）<br>3. マイル・特典航空券に関する情報提供（メールマガジン等）<br>4. サービス改善のための統計的分析（個人を特定しない形での利用）<br>5. お問い合わせへの対応</p>
+      <h3>第5条　第三者への提供</h3>
+      <p>当社は、ご本人の同意がある場合または法令に基づき開示が求められる場合を除き、取得した個人情報を第三者に提供しません。</p>
+      <h3>第6条　外部サービスへの委託</h3>
+      <p>個人情報の保管・管理にGoogle スプレッドシート・Google Apps Script（Google LLC）を利用しています。これらのサービスはGoogle LLCのプライバシーポリシーに従って運用されています。</p>
+      <h3>第7条　保管・管理方法</h3>
+      <p>アクセス制限を設けたGoogleスプレッドシートにて管理します。担当者以外がアクセスできない設定を維持し、適切な安全管理措置を講じます。</p>
+      <h3>第8条　保管期間</h3>
+      <p>本サービスの利用終了後または本人からの削除請求があるまで保管します。更新料のお支払いが確認できず1年以上経過した場合は順次削除します。</p>
+      <h3>第9条　本人の権利（開示・訂正・削除・利用停止）</h3>
+      <p>ご本人は開示・訂正・削除・利用停止の請求ができます。mile@cospa-labo.com までメールでお申し出ください。本人確認のうえ速やかに対応します。</p>
+      <h3>第10条　CookieおよびlocalStorage</h3>
+      <p>本サービスでは利用登録の確認のためブラウザのlocalStorageを使用しています。個人を特定する情報を外部に送信するものではありません。アクセス解析ツールは現時点では使用していません。</p>
+      <h3>第11条　プライバシーポリシーの変更</h3>
+      <p>本ポリシーは法令の改正やサービス内容の変更に伴い予告なく改定する場合があります。改定後のポリシーは本サービス内に掲載した時点で効力を生じます。</p>
+      <h3>第12条　お問い合わせ</h3>
+      <p>mile@cospa-labo.com</p>
+    </div>
+  </div>
+</div>
+
 <div class="footer">
   データ出典：マイル数一覧_全路線_整理版（2026年5月時点）／YQ・税金は参考値。最新額は発券時に各社公式サイトでご確認ください。<br>
-  <span style="margin-top:0.4rem;display:inline-block">
+  <span style="margin-top:0.4rem;display:inline-block;display:flex;justify-content:center;gap:1rem;flex-wrap:wrap">
+    <button class="footer-link" id="tosInfoOpenBtn">利用規約</button>
+    <button class="footer-link" id="ppOpenBtn">プライバシーポリシー</button>
     <button class="footer-link" id="tctOpenBtn">特定商取引法に基づく表記</button>
   </span>
 </div>
@@ -2393,15 +2505,27 @@ document.getElementById('searchBtn').addEventListener('click', () => {
   const tctClose   = document.getElementById('tctClose');
   const tctOpenBtn = document.getElementById('tctOpenBtn');
 
-  tctOpenBtn.addEventListener('click', () => {
-    tctOverlay.classList.add('open');
-  });
-  tctClose.addEventListener('click', () => {
-    tctOverlay.classList.remove('open');
-  });
+  tctOpenBtn.addEventListener('click', () => { tctOverlay.classList.add('open'); });
+  tctClose.addEventListener('click',   () => { tctOverlay.classList.remove('open'); });
   tctOverlay.addEventListener('click', e => {
     if (e.target === tctOverlay) tctOverlay.classList.remove('open');
   });
+})();
+
+// ===== 利用規約（フッターから参照） =====
+(function() {
+  const overlay = document.getElementById('tosInfoOverlay');
+  document.getElementById('tosInfoOpenBtn').addEventListener('click', () => overlay.classList.add('open'));
+  document.getElementById('tosInfoClose').addEventListener('click',   () => overlay.classList.remove('open'));
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+})();
+
+// ===== プライバシーポリシー =====
+(function() {
+  const overlay = document.getElementById('ppOverlay');
+  document.getElementById('ppOpenBtn').addEventListener('click', () => overlay.classList.add('open'));
+  document.getElementById('ppClose').addEventListener('click',   () => overlay.classList.remove('open'));
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
 })();
 
 // ===== タブ切り替え =====
