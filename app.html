@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>マイル活 特典航空券シミュレーター</title>
+<title>海外にマイルで行く 特典航空券シミュレーター</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #f0f4f8; color: #1a202c; min-height: 100vh; }
@@ -512,8 +512,8 @@
   .tct-table tr:nth-child(even) td { background: #f7fafc; }
   .tct-placeholder { color: #e53e3e; font-weight: 700; }
   #tctBox .tct-note { font-size: 0.75rem; color: #a0aec0; margin-top: 0.8rem; line-height: 1.6; }
-  .footer-link { background: none; border: 1px solid #cbd5e0; color: #718096; cursor: pointer; font-size: 0.75rem; text-decoration: none; padding: 0.35rem 0.8rem; border-radius: 20px; transition: all 0.18s; }
-  .footer-link:hover { border-color: #a0aec0; background: #f7fafc; color: #4a5568; }
+  .footer-link { background: none; border: 1px solid #90cdf4; color: #2b6cb0; cursor: pointer; font-size: 0.75rem; text-decoration: none; padding: 0.35rem 0.8rem; border-radius: 20px; transition: all 0.18s; }
+  .footer-link:hover { background: #ebf8ff; border-color: #63b3ed; color: #1a4e8a; }
 
   /* ===== 利用規約・PP オーバーレイ共通 ===== */
   .doc-overlay {
@@ -819,10 +819,14 @@
 <div id="tosOverlay">
   <div id="tosBox">
     <div class="tos-header">
-      <h2>マイルで行く<br>特典航空券シミュレーター</h2>
+      <h2>海外にマイルで行く<br>特典航空券シミュレーター</h2>
       <p>ご利用の前に、利用規約をお読みください</p>
     </div>
     <div class="tos-body">
+      <div style="margin-bottom:1rem;padding:0.8rem 1rem;background:#ebf8ff;border-left:4px solid #3182ce;border-radius:8px">
+        <div style="font-size:0.78rem;font-weight:700;color:#2b6cb0;margin-bottom:0.3rem">📢 お知らせ</div>
+        <p style="font-size:0.78rem;color:#4a5568;margin:0;line-height:1.7">現在のお知らせはありません。</p>
+      </div>
       <div class="tos-scroll" id="tosScroll">
         <h3>📌 ご利用目的について</h3>
         本ツールは「マイル活講座」の受講生を対象としたシミュレーターです。
@@ -856,7 +860,7 @@
 </div>
 
 <div class="hero">
-  <h1>マイルで行く<br>特典航空券シミュレーター</h1>
+  <h1>海外にマイルで行く<br>特典航空券シミュレーター</h1>
   <p>行き先からも、保有マイル数からも検索できます</p>
 
   <div class="search-tabs">
@@ -875,9 +879,9 @@
           <div class="dep-chips-inline" id="depChipsInline">
             <button class="dep-chip-inline active" data-dep="all">すべて</button>
             <button class="dep-chip-inline" data-dep="HND/NRT">🗼 東京</button>
-            <button class="dep-chip-inline" data-dep="KIX">大阪</button>
-            <button class="dep-chip-inline" data-dep="NGO">名古屋</button>
-            <button class="dep-chip-inline" data-dep="FUK">福岡</button>
+            <button class="dep-chip-inline" data-dep="KIX">🐙 大阪</button>
+            <button class="dep-chip-inline" data-dep="NGO">🏯 名古屋</button>
+            <button class="dep-chip-inline" data-dep="FUK">🍜 福岡</button>
           </div>
         </div>
         <div class="route-field-block">
@@ -984,14 +988,14 @@
     <div class="filter-group" id="depFilter">
       <button class="btn-filter active" data-val="all">すべて</button>
       <button class="btn-filter" data-val="HND/NRT">🗼 東京</button>
-      <button class="btn-filter" data-val="KIX">✈ 関西</button>
-      <button class="btn-filter" data-val="NGO">✈ 名古屋</button>
-      <button class="btn-filter" data-val="FUK">✈ 福岡</button>
+      <button class="btn-filter" data-val="KIX">🐙 関西</button>
+      <button class="btn-filter" data-val="NGO">🏯 名古屋</button>
+      <button class="btn-filter" data-val="FUK">🍜 福岡</button>
     </div>
     <span class="filter-label" style="margin-left:0.5rem">おすすめ基準</span>
     <div class="filter-group" id="priorityFilter">
       <button class="btn-filter active" data-val="miles">✈ マイル重視</button>
-      <button class="btn-filter" data-val="cost">💴 総コスト重視</button>
+      <button class="btn-filter" data-val="cost">💴 燃油サーチャージ安い順</button>
       <button class="btn-filter" data-val="unified">📊 全統合・マイル昇順</button>
     </div>
   </div>
@@ -1009,6 +1013,40 @@
   <div class="empty-state">
     <div class="icon">🗺</div>
     <p>都市名を入力して候補を選び、「検索」ボタンを押してください</p>
+  </div>
+</div>
+
+<!-- ===== アンケートオーバーレイ ===== -->
+<div class="doc-overlay" id="surveyOverlay">
+  <div class="doc-box" style="max-width:480px">
+    <div class="doc-header" style="background:linear-gradient(135deg,#c05621,#ed8936)">
+      <div>
+        <h2>🎁 アンケートに答える</h2>
+        <p>ご意見をお聞かせください</p>
+      </div>
+      <button class="doc-close" id="surveyClose">✕</button>
+    </div>
+    <div class="doc-body" style="text-align:center;padding:1.8rem 1.6rem">
+      <p style="font-size:1rem;font-weight:700;color:#2d3748;margin-bottom:0.8rem;line-height:1.6">
+        新しい機能を提案して<br>Amazonギフト券をもらおう！
+      </p>
+      <p style="font-size:0.85rem;color:#718096;line-height:1.8;margin-bottom:1.6rem">
+        マイルシミュレーターを使ってみての感想や、<br>
+        「こんな機能がほしい！」というアイデアを<br>
+        ぜひお聞かせください。<br>
+        いただいたご意見はサービス改善に活用します。
+      </p>
+      <a id="surveyLink"
+         href="●●"
+         target="_blank" rel="noopener"
+         style="display:inline-block;padding:0.9rem 2rem;background:linear-gradient(135deg,#c05621,#ed8936);color:white;text-decoration:none;border-radius:12px;font-size:0.95rem;font-weight:700;box-shadow:0 4px 15px rgba(192,86,33,0.35);transition:all 0.2s">
+        アンケートに回答する →
+      </a>
+      <p style="font-size:0.72rem;color:#a0aec0;margin-top:1rem">
+        ※ 回答はGoogleフォームで行います<br>
+        ※ 所要時間：約3分
+      </p>
+    </div>
   </div>
 </div>
 
@@ -1052,6 +1090,11 @@
       <h3>第13条（協議解決）</h3>
       <p>本規約に定めのない事項または解釈に疑義が生じた場合は、運営者とユーザーが誠意をもって協議し解決するものとします。</p>
       <p style="margin-top:0.8rem;font-size:0.78rem;color:#a0aec0">以上　制定：2026年6月　お問い合わせ：mile@cospa-labo.com</p>
+
+      <div style="margin-top:1.2rem;padding:0.9rem 1rem;background:#ebf8ff;border-left:4px solid #3182ce;border-radius:8px">
+        <div style="font-size:0.8rem;font-weight:700;color:#2b6cb0;margin-bottom:0.5rem">📢 お知らせ</div>
+        <p style="font-size:0.8rem;color:#4a5568;margin:0;line-height:1.7">現在のお知らせはありません。</p>
+      </div>
     </div>
   </div>
 </div>
@@ -1096,11 +1139,12 @@
 </div>
 
 <div class="footer">
-  データ出典：マイル数一覧_全路線_整理版（2026年5月時点）／YQ・税金は参考値。最新額は発券時に各社公式サイトでご確認ください。<br>
+  ※ マイル数・YQ・空港税はすべて参考値です。実際の発券前に各航空会社の公式サイトでご確認ください。（2026年6月更新）<br>
   <span style="margin-top:0.4rem;display:inline-block;display:flex;justify-content:center;gap:1rem;flex-wrap:wrap">
     <button class="footer-link" id="tosInfoOpenBtn">利用規約</button>
     <button class="footer-link" id="ppOpenBtn">プライバシーポリシー</button>
     <button class="footer-link" id="tctOpenBtn">特定商取引法に基づく表記</button>
+    <button class="footer-link" id="surveyOpenBtn" style="border-color:#f6ad55;color:#c05621;background:none">🎁 アンケートに答える</button>
   </span>
 </div>
 
@@ -2086,7 +2130,7 @@ function renderResults() {
     C: 'グループC（北米・ヨーロッパ・中東・中南米）'
   };
   const calGroupLabel = anaMatches.length ? groupNames[repGroup] : groupNames['C'];
-  let calHtml = `<div class="season-cal"><div class="season-cal-title">📅 ANA シーズンカレンダー ／ ${calGroupLabel}</div><div class="season-cal-grid">`;
+  let calHtml = `<div class="season-cal"><div class="season-cal-title">📅 ANA シーズンカレンダー ／ ${calGroupLabel}</div><div style="font-size:0.73rem;color:#718096;text-align:center;margin:-0.3rem 0 0.6rem">カレンダーはシーズン確認のためお使いください。上部日付指定より希望日を指定してください</div><div class="season-cal-grid">`;
   for (let mo = 1; mo <= 12; mo++) {
     const s = calcSeason(mo, 15, repZone); // 各月15日・該当ゾーンで判定
     calHtml += `<div class="cal-cell ${seasonColor[s]}"><div class="cal-month">${monthNames[mo-1]}</div><div class="cal-season">${seasonLabel[s]}</div></div>`;
@@ -2525,6 +2569,14 @@ document.getElementById('searchBtn').addEventListener('click', () => {
   const overlay = document.getElementById('ppOverlay');
   document.getElementById('ppOpenBtn').addEventListener('click', () => overlay.classList.add('open'));
   document.getElementById('ppClose').addEventListener('click',   () => overlay.classList.remove('open'));
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+})();
+
+// ===== アンケート =====
+(function() {
+  const overlay = document.getElementById('surveyOverlay');
+  document.getElementById('surveyOpenBtn').addEventListener('click', () => overlay.classList.add('open'));
+  document.getElementById('surveyClose').addEventListener('click',   () => overlay.classList.remove('open'));
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
 })();
 
