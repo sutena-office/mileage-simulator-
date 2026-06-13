@@ -136,8 +136,9 @@
   .route-search-box { background: rgba(255,255,255,0.12); border-radius: 16px; padding: 1.2rem 1.4rem; }
   .route-top-row { display: flex; gap: 0.8rem; }
   .route-field-block { flex: 1; display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
-  .route-field-lbl { font-size: 0.72rem; font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 0.05em; }
-  .dep-chips-inline { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+  .route-field-lbl { font-size: 0.82rem; font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 0.05em; }
+  .dep-chips-inline { display: flex; gap: 0.3rem; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .dep-chips-inline::-webkit-scrollbar { display: none; }
   .dep-chip-inline { background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.35); color: white; border-radius: 20px; padding: 0.25rem 0.6rem; font-size: 0.74rem; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
   .dep-chip-inline:hover { background: rgba(255,255,255,0.28); }
   .dep-chip-inline.active { background: white; color: #2b6cb0; border-color: white; }
@@ -312,7 +313,7 @@
       background:
         linear-gradient(rgba(0,0,0,0.48), rgba(0,0,0,0.48)),
         url('hero-square.jpg') center/cover no-repeat;
-      padding: 2rem 0.75rem 2.5rem; /* 左右paddingを狭めて検索欄を広く */
+      padding: 4.5rem 0.75rem 2.5rem;
     }
     .hero h1 { font-size: 1.4rem; }
     .search-box { width: 100%; max-width: 100%; }
