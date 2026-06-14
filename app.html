@@ -2378,7 +2378,7 @@ function renderResults() {
       ${isBestCost ? '<div class="best-badge-cost">💴 総コスト最安</div>' : ''}
       <div class="card-header">
         ${statusDot}
-        <span class="airline-name">${r.airline}</span>
+        <span class="airline-name">${r.airline || r.miles_program || ''}</span>
         ${r.airline_code ? `<span style="font-size:0.8rem;color:#718096">${r.airline_code}</span>` : ''}
         ${tags}
         ${r.airport && r.airport !== 'NaN' ? `<span style="margin-left:auto;text-align:right;line-height:1.3">
