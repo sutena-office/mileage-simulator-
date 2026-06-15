@@ -610,9 +610,223 @@
   }
   .doc-body h3 { font-size: 0.85rem; color: #2d3748; font-weight: 700; margin: 0.9rem 0 0.3rem; }
   .doc-body h3:first-child { margin-top: 0; }
+
+  /* ===== アクセス制御 UI ===== */
+  #trial-banner {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 9000;
+    background: linear-gradient(135deg, #2b6cb0, #1a4e8a);
+    color: white; padding: 0.55rem 1rem;
+    display: flex; align-items: center; justify-content: center;
+    gap: 0.8rem; flex-wrap: wrap; font-size: 0.85rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  }
+  #trial-banner .trial-days { font-weight: 700; background: rgba(255,255,255,0.2); padding: 2px 10px; border-radius: 20px; }
+  #trial-banner button {
+    background: white; color: #2b6cb0; border: none;
+    padding: 4px 14px; border-radius: 20px; font-size: 0.82rem;
+    font-weight: 700; cursor: pointer; white-space: nowrap;
+  }
+  #trial-banner button:hover { background: #ebf8ff; }
+
+  #access-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9999;
+    background: rgba(15,23,42,0.92); backdrop-filter: blur(6px);
+    align-items: center; justify-content: center;
+  }
+  #access-overlay.show { display: flex; }
+  #access-box {
+    background: white; border-radius: 20px; padding: 2.4rem 2rem;
+    max-width: 420px; width: 92%; text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+  #access-box .lock-icon { font-size: 3rem; margin-bottom: 0.8rem; }
+  #access-box h2 { font-size: 1.25rem; font-weight: 700; color: #1a202c; margin-bottom: 0.5rem; }
+  #access-box p { font-size: 0.88rem; color: #718096; margin-bottom: 1.4rem; line-height: 1.7; }
+  #access-box input {
+    width: 100%; padding: 0.75rem 1rem; border: 2px solid #e2e8f0;
+    border-radius: 10px; font-size: 1rem; text-align: center;
+    letter-spacing: 0.1em; outline: none; margin-bottom: 0.6rem;
+    transition: border-color 0.2s;
+  }
+  #access-box input:focus { border-color: #2b6cb0; }
+  #access-box input.error { border-color: #e53e3e; animation: shake 0.3s; }
+  #access-box .btn-unlock {
+    width: 100%; background: #2b6cb0; color: white; border: none;
+    padding: 0.8rem; border-radius: 10px; font-size: 1rem;
+    font-weight: 700; cursor: pointer; transition: background 0.2s;
+  }
+  #access-box .btn-unlock:hover { background: #1a4e8a; }
+  #access-box .error-msg { color: #e53e3e; font-size: 0.82rem; margin-top: 0.4rem; min-height: 1.2em; }
+  #code-modal {
+    display: none; position: fixed; inset: 0; z-index: 9998;
+    background: rgba(15,23,42,0.7); align-items: center; justify-content: center;
+  }
+  #code-modal.show { display: flex; }
+  #code-modal-box {
+    background: white; border-radius: 16px; padding: 1.8rem 1.6rem;
+    max-width: 360px; width: 92%; text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  }
+  #code-modal-box h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.6rem; color: #1a202c; }
+  #code-modal-box p { font-size: 0.83rem; color: #718096; margin-bottom: 1rem; }
+  #code-modal-box input {
+    width: 100%; padding: 0.7rem 1rem; border: 2px solid #e2e8f0;
+    border-radius: 10px; font-size: 0.95rem; text-align: center;
+    letter-spacing: 0.1em; outline: none; margin-bottom: 0.5rem;
+    transition: border-color 0.2s;
+  }
+  #code-modal-box input:focus { border-color: #2b6cb0; }
+  #code-modal-box input.error { border-color: #e53e3e; animation: shake 0.3s; }
+  #code-modal-box .btn-row { display: flex; gap: 0.5rem; margin-top: 0.3rem; }
+  #code-modal-box .btn-cancel { flex: 1; background: #edf2f7; color: #4a5568; border: none; padding: 0.65rem; border-radius: 8px; font-size: 0.9rem; cursor: pointer; }
+  #code-modal-box .btn-submit { flex: 2; background: #2b6cb0; color: white; border: none; padding: 0.65rem; border-radius: 8px; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
+  #code-modal-box .btn-submit:hover { background: #1a4e8a; }
+  #code-modal-box .modal-error { color: #e53e3e; font-size: 0.8rem; margin-top: 0.3rem; min-height: 1.1em; }
+  @keyframes shake {
+    0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)}
+  }
+  body.has-trial-banner .hero,
+  body.has-trial-banner #topBtns { margin-top: 40px; }
 </style>
 </head>
 <body>
+
+<!-- ===== アクセス制御 ===== -->
+<!-- トライアル期間バナー -->
+<div id="trial-banner" style="display:none">
+  <span>🎁 無料トライアル期間中</span>
+  <span class="trial-days" id="trial-days-text"></span>
+  <span style="opacity:0.8;font-size:0.8rem">マイル講座ご購入の方は継続利用できます</span>
+  <button onclick="openCodeModal()">コードを入力</button>
+</div>
+
+<!-- 期限切れオーバーレイ -->
+<div id="access-overlay">
+  <div id="access-box">
+    <div class="lock-icon">🔒</div>
+    <h2>無料トライアル期間が終了しました</h2>
+    <p>マイル活講座をご購入の方は、<br>お手元の「利用コード」を入力してください。<br>一度入力すると、このブラウザでは永続的にご利用いただけます。</p>
+    <input type="text" id="access-code-input" placeholder="利用コードを入力" maxlength="30"
+      oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')tryUnlock()">
+    <button class="btn-unlock" onclick="tryUnlock()">解除する</button>
+    <div class="error-msg" id="access-error"></div>
+  </div>
+</div>
+
+<!-- コード入力モーダル（トライアル中） -->
+<div id="code-modal">
+  <div id="code-modal-box">
+    <h3>🔑 利用コードを入力</h3>
+    <p>マイル活講座をご購入の方は<br>コードを入力してトライアル終了後も利用できます</p>
+    <input type="text" id="modal-code-input" placeholder="利用コードを入力" maxlength="30"
+      oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')tryModalUnlock()">
+    <div class="modal-error" id="modal-error"></div>
+    <div class="btn-row">
+      <button class="btn-cancel" onclick="closeCodeModal()">キャンセル</button>
+      <button class="btn-submit" onclick="tryModalUnlock()">解除する</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(async function() {
+  // ============================================================
+  // ▼▼▼ 設定エリア ▼▼▼
+  // ============================================================
+
+  // トライアル終了日（この日の23:59:59まで利用可能）
+  // GAS URL（index.htmlと同じものを設定）
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbwv6yUBy8mXg59v-5ee-dhSLx2ojs2sgj8Kq6BnBxRRzFm_NA1ln6LbX9jEQ9QYjkwsbg/exec';
+
+  // トライアル用コード（このコードは誰でも使える共通コード）
+  const TRIAL_CODE = 'MILE-TRIAL';
+
+  // ============================================================
+  // ▲▲▲ 設定エリア ▲▲▲
+  // ============================================================
+
+  const LS_KEY = 'mile_sim_unlocked_code';
+
+  async function validateWithGAS(code) {
+    // トライアルコードはGAS不要で即許可
+    if (code.toUpperCase() === TRIAL_CODE) return true;
+    const res = await fetch(`${GAS_URL}?action=validate&code=${encodeURIComponent(code)}`);
+    const data = await res.json();
+    return data.valid === true;
+  }
+
+  function showError(inputEl, errEl, msg) {
+    inputEl.classList.add('error');
+    errEl.textContent = msg;
+    setTimeout(() => inputEl.classList.remove('error'), 400);
+  }
+
+  // 保存済みコードがある場合：バックグラウンドで再検証（失効チェック）
+  const savedCode = localStorage.getItem(LS_KEY);
+  if (savedCode) {
+    validateWithGAS(savedCode).then(valid => {
+      if (!valid) {
+        localStorage.removeItem(LS_KEY);
+        document.getElementById('access-overlay').classList.add('show');
+        document.getElementById('access-code-input').focus();
+      }
+    }).catch(() => {}); // GASが落ちている場合はそのまま許可
+    return;
+  }
+
+  // コードなし → 常にロック画面
+  document.getElementById('access-overlay').classList.add('show');
+  document.getElementById('access-code-input').focus();
+
+  async function doUnlock(inputId, errId, onSuccess) {
+    const input = document.getElementById(inputId);
+    const errEl = document.getElementById(errId);
+    const code  = input.value.trim().toUpperCase();
+    if (!code) return;
+
+    // ボタンを「確認中」に切り替え
+    const btn = input.closest('div').querySelector('button.btn-unlock, button.btn-submit');
+    const origText = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.textContent = '確認中…'; }
+    errEl.textContent = '';
+
+    try {
+      const valid = await validateWithGAS(code);
+      if (valid) {
+        localStorage.setItem(LS_KEY, code);
+        onSuccess();
+      } else {
+        showError(input, errEl, 'コードが正しくないか、利用が停止されています。');
+        if (btn) { btn.disabled = false; btn.textContent = origText; }
+      }
+    } catch {
+      showError(input, errEl, '通信エラーが発生しました。もう一度お試しください。');
+      if (btn) { btn.disabled = false; btn.textContent = origText; }
+    }
+  }
+
+  window.tryUnlock = () => doUnlock('access-code-input', 'access-error', () => {
+    document.getElementById('access-overlay').classList.remove('show');
+  });
+
+  window.openCodeModal = function() {
+    document.getElementById('code-modal').classList.add('show');
+    setTimeout(() => document.getElementById('modal-code-input').focus(), 50);
+  };
+
+  window.closeCodeModal = function() {
+    document.getElementById('code-modal').classList.remove('show');
+    document.getElementById('modal-code-input').value = '';
+    document.getElementById('modal-error').textContent = '';
+  };
+
+  window.tryModalUnlock = () => doUnlock('modal-code-input', 'modal-error', () => {
+    document.getElementById('code-modal').classList.remove('show');
+    document.getElementById('trial-banner').style.display = 'none';
+    document.body.classList.remove('has-trial-banner');
+  });
+})();
+</script>
 
 <!-- ===== 右上ボタン群 ===== -->
 <div id="topBtns">
