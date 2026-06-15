@@ -337,7 +337,7 @@
     position: fixed; top: 1rem; right: 1rem; z-index: 1000;
     display: flex; gap: 0.5rem; align-items: center;
   }
-  #glossaryBtn, #howtoBtn {
+  #glossaryBtn, #howtoBtn, #trialSurveyBtn, #surveyOpenBtn {
     background: rgba(255,255,255,0.18); backdrop-filter: blur(8px);
     color: white; border: 1.5px solid rgba(255,255,255,0.5);
     border-radius: 30px; padding: 0.45rem 1rem;
@@ -460,7 +460,7 @@
   }
   @media (max-width: 600px) {
     #topBtns { top: 0.7rem; right: 0.7rem; gap: 0.35rem; }
-    #glossaryBtn, #howtoBtn { font-size: 0.75rem; padding: 0.4rem 0.8rem; }
+    #glossaryBtn, #howtoBtn, #trialSurveyBtn, #surveyOpenBtn { font-size: 0.75rem; padding: 0.4rem 0.8rem; }
     .glossary-body, .howto-body { padding: 1rem 1rem 1.2rem; }
   }
   @media (max-width: 600px) {
@@ -840,6 +840,8 @@
 
 <!-- ===== 右上ボタン群 ===== -->
 <div id="topBtns">
+  <button id="trialSurveyBtn" style="display:none">🔍 アンケート</button>
+  <button id="surveyOpenBtn" style="display:none">🎁 アンケート</button>
   <button id="howtoBtn">💡 使い方</button>
   <button id="glossaryBtn">📖 用語集</button>
 </div>
@@ -1528,7 +1530,6 @@
     <button class="footer-link" id="tosInfoOpenBtn">利用規約</button>
     <button class="footer-link" id="ppOpenBtn">プライバシーポリシー</button>
     <button class="footer-link" id="tctOpenBtn">特定商取引法に基づく表記</button>
-    <button class="footer-link" id="surveyOpenBtn" style="border-color:#f6ad55;color:#c05621;background:none">🎁 アンケートに答える</button>
   </span>
 </div>
 
@@ -3048,12 +3049,29 @@ document.getElementById('searchBtn').addEventListener('click', () => {
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
 })();
 
-// ===== アンケート =====
+// ===== アンケート（日付による表示切り替え）=====
 (function() {
-  const overlay = document.getElementById('surveyOverlay');
-  document.getElementById('surveyOpenBtn').addEventListener('click', () => overlay.classList.add('open'));
-  document.getElementById('surveyClose').addEventListener('click',   () => overlay.classList.remove('open'));
-  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+  const now   = new Date();
+  const trial = new Date('2026-07-25T23:59:59'); // 〜この日はトライアルアンケート
+  const pause = new Date('2026-08-31T23:59:59'); // この日まで非表示
+  // 〜7/25：トライアルアンケートボタンを表示
+  if (now <= trial) {
+    const btn = document.getElementById('trialSurveyBtn');
+    btn.style.display = '';
+    btn.addEventListener('click', () => {
+      // トライアルアンケートURLが決まったらここに設定
+      window.open('https://docs.google.com/forms/d/e/1FAIpQLScMKj8JcuhuS8Tb0fO1uIATZHwiTJFfb8WH0CMW7X0awLHuWA/viewform', '_blank');
+    });
+  }
+  // 9/1〜：通常アンケートボタンを表示
+  if (now > pause) {
+    const overlay = document.getElementById('surveyOverlay');
+    const btn = document.getElementById('surveyOpenBtn');
+    btn.style.display = '';
+    btn.addEventListener('click', () => overlay.classList.add('open'));
+    document.getElementById('surveyClose').addEventListener('click', () => overlay.classList.remove('open'));
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+  }
 })();
 
 // ===== タブ切り替え =====
