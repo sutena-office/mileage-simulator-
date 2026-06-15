@@ -707,7 +707,8 @@
     <h2 id="access-title">無料トライアル期間が終了しました</h2>
     <p id="access-desc">マイル講座をご購入の方は、お手元の「利用コード」を入力してください。一度入力すると期限までは同ブラウザでは再入力なくご使用いただけます。</p>
     <input type="text" id="access-code-input" placeholder="利用コードを入力" maxlength="30"
-      oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')tryUnlock()">
+      autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false"
+      onkeydown="if(event.key==='Enter')tryUnlock()">
     <button class="btn-unlock" onclick="tryUnlock()">解除する</button>
     <div class="error-msg" id="access-error"></div>
   </div>
@@ -719,7 +720,8 @@
     <h3>🔑 利用コードを入力</h3>
     <p>マイル活講座をご購入の方は<br>コードを入力してトライアル終了後も利用できます</p>
     <input type="text" id="modal-code-input" placeholder="利用コードを入力" maxlength="30"
-      oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')tryModalUnlock()">
+      autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false"
+      onkeydown="if(event.key==='Enter')tryModalUnlock()">
     <div class="modal-error" id="modal-error"></div>
     <div class="btn-row">
       <button class="btn-cancel" onclick="closeCodeModal()">キャンセル</button>
