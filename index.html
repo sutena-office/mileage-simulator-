@@ -281,9 +281,9 @@
     <!-- ③ 同意チェック -->
     <div class="card">
       <div class="card-title">✅ 同意確認</div>
-      <div class="agree-row" id="agreeRow" onclick="toggleAgree()">
-        <input type="checkbox" id="agreeCheck" disabled>
-        <label for="agreeCheck">利用規約およびプライバシーポリシーを最後まで読み、内容に同意します</label>
+      <div class="agree-row" id="agreeRow" onclick="agreeRowClick(event)">
+        <input type="checkbox" id="agreeCheck" disabled onchange="updateAgreeUI()">
+        <label>利用規約およびプライバシーポリシーを最後まで読み、内容に同意します</label>
       </div>
       <p style="font-size:0.73rem;color:#a0aec0;margin-top:0.6rem;line-height:1.6">
         ※ 両方を最後までスクロールするとチェックできるようになります
@@ -427,10 +427,15 @@ window.addEventListener('load', () => {
 });
 
 // ─── 同意チェック
-function toggleAgree() {
-  const cb  = document.getElementById('agreeCheck');
+function agreeRowClick(e) {
+  const cb = document.getElementById('agreeCheck');
   if (cb.disabled) return;
+  if (e.target === cb) return; // checkboxは onchange で処理
   cb.checked = !cb.checked;
+  updateAgreeUI();
+}
+function updateAgreeUI() {
+  const cb = document.getElementById('agreeCheck');
   document.getElementById('agreeRow').classList.toggle('checked', cb.checked);
   document.getElementById('formSection').classList.toggle('active', cb.checked);
   document.getElementById('submitBtn').disabled = !cb.checked;
