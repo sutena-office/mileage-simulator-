@@ -704,8 +704,8 @@
 <div id="access-overlay">
   <div id="access-box">
     <div class="lock-icon">🔒</div>
-    <h2>無料トライアル期間が終了しました</h2>
-    <p>マイル活講座をご購入の方は、<br>お手元の「利用コード」を入力してください。<br>一度入力すると、このブラウザでは永続的にご利用いただけます。</p>
+    <h2 id="access-title">無料トライアル期間が終了しました</h2>
+    <p id="access-desc">マイル講座をご購入の方は、お手元の「利用コード」を入力してください。一度入力すると期限までは同ブラウザでは再入力なくご使用いただけます。</p>
     <input type="text" id="access-code-input" placeholder="利用コードを入力" maxlength="30"
       oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')tryUnlock()">
     <button class="btn-unlock" onclick="tryUnlock()">解除する</button>
@@ -774,7 +774,17 @@
     return;
   }
 
-  // コードなし → 常にロック画面
+  // コードなし → 常にロック画面（日付で文言切り替え）
+  (function() {
+    const EXPIRY = new Date('2026-07-25T23:59:59');
+    const isTrial = new Date() <= EXPIRY;
+    document.getElementById('access-title').textContent = isTrial
+      ? '無料トライアルコードをご入力ください'
+      : '無料トライアル期間が終了しました';
+    document.getElementById('access-desc').textContent = isTrial
+      ? '無料トライアルをお申込みの方は、コードを入力すると7月25日までは無料でお試しいただけます。'
+      : 'マイル講座をご購入の方は、お手元の「利用コード」を入力してください。一度入力すると期限までは同ブラウザでは再入力なくご使用いただけます。';
+  })();
   document.getElementById('access-overlay').classList.add('show');
   document.getElementById('access-code-input').focus();
 
