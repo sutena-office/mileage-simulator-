@@ -478,7 +478,8 @@ async function submitForm() {
   document.getElementById('submitBtn').disabled = true;
   document.getElementById('loadingMsg').style.display = 'block';
 
-  const body = new URLSearchParams({
+  const params = new URLSearchParams({
+    action: 'register',
     name, email, address, phone,
     miles:   surveyAnswers.q1,
     regions: [...q2Selected].join('・'),
@@ -486,17 +487,22 @@ async function submitForm() {
   });
 
   try {
-    await fetch(GAS_URL, { method: 'POST', body, mode: 'no-cors' });
-    // no-cors ではレスポンスを読めないが GAS は確実に処理する
-    localStorage.setItem('mile_registered', 'true');
-    document.getElementById('registerForm').style.display  = 'none';
-    document.getElementById('successScreen').style.display = 'block';
-    let sec = 3;
-    const timer = setInterval(() => {
-      sec--;
-      document.getElementById('countdown').textContent = sec + '秒後に自動で移動します...';
-      if (sec <= 0) { clearInterval(timer); window.location.href = 'app.html'; }
-    }, 1000);
+    const res  = await fetch(`${GAS_URL}?${params}`);
+    const data = await res.json();
+
+    if (data.status === 'ok') {
+      localStorage.setItem('mile_registered', 'true');
+      document.getElementById('registerForm').style.display  = 'none';
+      document.getElementById('successScreen').style.display = 'block';
+      let sec = 3;
+      const timer = setInterval(() => {
+        sec--;
+        document.getElementById('countdown').textContent = sec + '秒後に自動で移動します...';
+        if (sec <= 0) { clearInterval(timer); window.location.href = 'app.html'; }
+      }, 1000);
+    } else {
+      throw new Error(data.message || '不明なエラー');
+    }
   } catch (err) {
     alert('登録中にエラーが発生しました。もう一度お試しください。\n' + err.message);
     document.getElementById('submitBtn').disabled = false;
