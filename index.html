@@ -478,7 +478,7 @@ async function submitForm() {
   document.getElementById('submitBtn').disabled = true;
   document.getElementById('loadingMsg').style.display = 'block';
 
-  const body = JSON.stringify({
+  const body = new URLSearchParams({
     name, email, address, phone,
     miles:   surveyAnswers.q1,
     regions: [...q2Selected].join('・'),
