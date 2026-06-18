@@ -391,7 +391,7 @@
 </div><!-- /container -->
 
 <script>
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwv6yUBy8mXg59v-5ee-dhSLx2ojs2sgj8Kq6BnBxRRzFm_NA1ln6LbX9jEQ9QYjkwsbg/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwv6uUBy8mXg59v-5ee-dhSLx2ojs2sgj8Kq6BnBxRRzFm_NA1ln6LbX9jEQ9QYjkwsbg/exec';
 
 // ─── 登録済みチェック
 if (localStorage.getItem('mile_registered') === 'true') {
@@ -478,7 +478,7 @@ async function submitForm() {
   document.getElementById('submitBtn').disabled = true;
   document.getElementById('loadingMsg').style.display = 'block';
 
-  const body = new URLSearchParams({
+  const body = JSON.stringify({
     name, email, address, phone,
     miles:   surveyAnswers.q1,
     regions: [...q2Selected].join('・'),
@@ -487,7 +487,13 @@ async function submitForm() {
 
   try {
     const res  = await fetch(GAS_URL, { method: 'POST', body });
-    const data = await res.json();
+    const text = await res.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (_) {
+      throw new Error('GASからの応答がJSONではありません。管理者にご連絡ください。\n' + text.slice(0, 120));
+    }
 
     if (data.status === 'ok') {
       localStorage.setItem('mile_registered', 'true');
