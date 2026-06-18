@@ -2720,15 +2720,21 @@ function renderResults() {
     if (showCls.length === 0) return '';
 
     // ── マイル数グリッド ──
+    const dirFactor = activeDir === '片道' ? 0.5 : 1;
+    const dirLabel  = activeDir === '片道' ? '片道' : '往復';
     let priceHtml = '<div class="transit-price-row">';
     showCls.forEach(({ key, label, data }) => {
       const lo = data.low, re = data.regular, hi = data.high;
-      const disp = re ?? lo ?? hi;
+      const disp = Math.round((re ?? lo ?? hi) * dirFactor);
+      const loD = lo ? Math.round(lo * dirFactor) : null;
+      const hiD = hi ? Math.round(hi * dirFactor) : null;
       const isF = key === 'first';
+      const convNote = activeDir === '片道' ? `<div style="font-size:0.6rem;color:#a0aec0;margin-top:1px">往復データより÷2</div>` : '';
       priceHtml += `<div class="transit-price-cell ${isF ? 'has-f' : ''}">
         <div class="transit-cls-label">${label}</div>
-        <div class="transit-price-val">${fmtMiles(disp)}<small style="font-weight:400;font-size:0.62rem"> マイル</small></div>
-        ${(lo && hi && lo !== hi) ? `<div class="transit-price-range">Low ${fmtMiles(lo)} 〜 High ${fmtMiles(hi)}</div>` : ''}
+        <div class="transit-price-val">${fmtMiles(disp)}<small style="font-weight:400;font-size:0.62rem"> マイル（${dirLabel}）</small></div>
+        ${(loD && hiD && loD !== hiD) ? `<div class="transit-price-range">Low ${fmtMiles(loD)} 〜 High ${fmtMiles(hiD)}</div>` : ''}
+        ${convNote}
       </div>`;
     });
     priceHtml += '</div>';
@@ -2764,21 +2770,36 @@ function renderResults() {
       ✈ 使用マイル：<strong>${milesProgram}</strong>
     </div>`;
 
-    // ── 空港税・燃油サーチャージ（エリア別おおよそ）──
-    const fees = getTransitFees(r);
+    // ── 空港税・燃油サーチャージ ──
     let feesHtml = '';
-    if (fees) {
+    if (r.yq != null || r.tax != null) {
+      const fmtYen = v => v != null ? `¥${Math.round(v * dirFactor).toLocaleString('ja-JP')}` : '—';
       feesHtml = `<div class="transit-fees-row">
         <div class="transit-fee-item">
-          <span class="transit-fee-label">🔥 燃油YQ（目安・往復）</span>
-          <span class="transit-fee-val">${fees.yq}</span>
+          <span class="transit-fee-label">🔥 燃油YQ（目安・${dirLabel}）</span>
+          <span class="transit-fee-val">${fmtYen(r.yq)}</span>
         </div>
         <div class="transit-fee-item">
-          <span class="transit-fee-label">🏛 空港税（目安・往復）</span>
-          <span class="transit-fee-val">${fees.tax}</span>
+          <span class="transit-fee-label">🏛 空港税（目安・${dirLabel}）</span>
+          <span class="transit-fee-val">${fmtYen(r.tax)}</span>
         </div>
         <div class="transit-fee-note">※ 実際の金額は予約時に確認してください</div>
       </div>`;
+    } else {
+      const fees = getTransitFees(r);
+      if (fees) {
+        feesHtml = `<div class="transit-fees-row">
+          <div class="transit-fee-item">
+            <span class="transit-fee-label">🔥 燃油YQ（目安・往復）</span>
+            <span class="transit-fee-val">${fees.yq}</span>
+          </div>
+          <div class="transit-fee-item">
+            <span class="transit-fee-label">🏛 空港税（目安・往復）</span>
+            <span class="transit-fee-val">${fees.tax}</span>
+          </div>
+          <div class="transit-fee-note">※ 実際の金額は予約時に確認してください</div>
+        </div>`;
+      }
     }
 
     // ── 公式予約ボタン ──
