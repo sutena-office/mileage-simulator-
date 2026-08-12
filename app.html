@@ -745,7 +745,7 @@
   // ============================================================
 
   // トライアル終了日（この日の23:59:59まで利用可能）
-  const TRIAL_EXPIRY = new Date('2026-08-10T23:59:59');
+  const TRIAL_EXPIRY = new Date('2026-12-31T23:59:59');
 
   // GAS URL（index.htmlと同じものを設定）
   const GAS_URL = 'https://script.google.com/macros/s/AKfycbwv6yUBy8mXg59v-5ee-dhSLx2ojs2sgj8Kq6BnBxRRzFm_NA1ln6LbX9jEQ9QYjkwsbg/exec';
@@ -795,7 +795,7 @@
       ? '無料トライアルコードをご入力ください'
       : '無料トライアル期間が終了しました';
     document.getElementById('access-desc').textContent = isTrial
-      ? '無料トライアルをお申込みの方は、コードを入力すると8月10日までは無料でお試しいただけます。'
+      ? '無料トライアルをお申込みの方は、コードを入力すると12月31日までは無料でお試しいただけます。'
       : 'マイル講座をご購入の方は、お手元の「利用コード」を入力してください。一度入力すると期限までは同ブラウザでは再入力なくご使用いただけます。';
   })();
   document.getElementById('access-overlay').classList.add('show');
