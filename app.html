@@ -776,6 +776,8 @@
   // 保存済みコードがある場合：バックグラウンドで再検証（失効チェック）
   const savedCode = localStorage.getItem(LS_KEY);
   if (savedCode) {
+    // トライアルで開始済みの方は期限後も継続利用可（締切は新規のコード入力のみに適用）
+    if (savedCode.toUpperCase() === TRIAL_CODE) return;
     validateWithGAS(savedCode).then(valid => {
       if (!valid) {
         localStorage.removeItem(LS_KEY);
