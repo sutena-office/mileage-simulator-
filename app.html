@@ -773,6 +773,9 @@
     setTimeout(() => inputEl.classList.remove('error'), 400);
   }
 
+  // 利用登録済み（index.htmlで登録した方）はコード入力なしで利用可
+  if (localStorage.getItem('mile_registered') === 'true') return;
+
   // 保存済みコードがある場合：バックグラウンドで再検証（失効チェック）
   const savedCode = localStorage.getItem(LS_KEY);
   if (savedCode) {
