@@ -1445,7 +1445,7 @@
     </div>
     <div class="doc-body" style="text-align:center;padding:1.8rem 1.6rem">
       <p style="font-size:1rem;font-weight:700;color:#2d3748;margin-bottom:0.8rem;line-height:1.6">
-        新しい機能を提案して<br>Amazonギフト券をもらおう！
+        新しい機能を提案して<br>マイルのZoom会に参加しよう！
       </p>
       <p style="font-size:0.85rem;color:#718096;line-height:1.8;margin-bottom:1.6rem">
         マイルシミュレーターを使ってみての感想や、<br>
@@ -1454,7 +1454,7 @@
         いただいたご意見はサービス改善に活用します。
       </p>
       <a id="surveyLink"
-         href="●●"
+         href="#"
          target="_blank" rel="noopener"
          style="display:inline-block;padding:0.9rem 2rem;background:linear-gradient(135deg,#c05621,#ed8936);color:white;text-decoration:none;border-radius:12px;font-size:0.95rem;font-weight:700;box-shadow:0 4px 15px rgba(192,86,33,0.35);transition:all 0.2s">
         アンケートに回答する →
@@ -3433,6 +3433,10 @@ document.getElementById('searchBtn').addEventListener('click', () => {
 
 // ===== アンケート（日付による表示切り替え）=====
 (function() {
+  // 通常アンケートのGoogleフォームURL。空の間はアンケートボタンを表示しない
+  // （URLが決まったらここに貼るだけでボタンが復活します）
+  const SURVEY_URL = '';
+
   const now   = new Date();
   const trial = new Date('2026-07-25T23:59:59'); // 〜この日はトライアルアンケート
   const pause = new Date('2026-08-31T23:59:59'); // この日まで非表示
@@ -3445,10 +3449,11 @@ document.getElementById('searchBtn').addEventListener('click', () => {
       window.open('https://docs.google.com/forms/d/e/1FAIpQLScMKj8JcuhuS8Tb0fO1uIATZHwiTJFfb8WH0CMW7X0awLHuWA/viewform', '_blank');
     });
   }
-  // 9/1〜：通常アンケートボタンを表示
-  if (now > pause) {
+  // 9/1〜：通常アンケートボタンを表示（URL未設定の間は出さない）
+  if (now > pause && SURVEY_URL) {
     const overlay = document.getElementById('surveyOverlay');
     const btn = document.getElementById('surveyOpenBtn');
+    document.getElementById('surveyLink').href = SURVEY_URL;
     btn.style.display = '';
     btn.addEventListener('click', () => overlay.classList.add('open'));
     document.getElementById('surveyClose').addEventListener('click', () => overlay.classList.remove('open'));
