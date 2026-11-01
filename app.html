@@ -488,7 +488,11 @@
     background: white; border-radius: 20px;
     max-width: 560px; width: 100%;
     box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-    overflow: hidden;
+    /* 画面より高くなったらカード内でスクロールさせる。
+       これが無いと小さい端末で上下が切れ、同意ボタンが押せなくなる */
+    max-height: calc(100vh - 2rem);
+    overflow-x: hidden;
+    overflow-y: auto;
   }
   #tosBox .tos-header {
     background: linear-gradient(135deg, #1a365d, #2b6cb0);
@@ -1206,7 +1210,7 @@
     <div class="tos-body">
       <div style="margin-bottom:1rem;padding:0.8rem 1rem;background:#ebf8ff;border-left:4px solid #3182ce;border-radius:8px">
         <div style="font-size:0.78rem;font-weight:700;color:#2b6cb0;margin-bottom:0.3rem">📢 お知らせ</div>
-        <p style="font-size:0.78rem;color:#4a5568;margin:0;line-height:1.7">現在のお知らせはありません。</p>
+        <p id="noticeShort" style="font-size:0.78rem;color:#4a5568;margin:0;line-height:1.7">現在のお知らせはありません。</p>
       </div>
       <div class="tos-scroll" id="tosScroll">
         <p style="font-weight:700;margin-bottom:0.6rem">マイルシュミレーター 利用規約<br><span style="font-weight:400;font-size:0.8rem">制定日：2026年6月</span></p>
@@ -1506,7 +1510,7 @@
 
       <div style="margin-top:1.2rem;padding:0.9rem 1rem;background:#ebf8ff;border-left:4px solid #3182ce;border-radius:8px">
         <div style="font-size:0.8rem;font-weight:700;color:#2b6cb0;margin-bottom:0.5rem">📢 お知らせ</div>
-        <p style="font-size:0.8rem;color:#4a5568;margin:0;line-height:1.7">現在のお知らせはありません。</p>
+        <p id="noticeFull" style="font-size:0.8rem;color:#4a5568;margin:0;line-height:1.7">現在のお知らせはありません。</p>
       </div>
     </div>
   </div>
@@ -3396,6 +3400,41 @@ document.getElementById('searchBtn').addEventListener('click', () => {
     overlay.style.transition = 'opacity 0.4s ease';
     setTimeout(() => { overlay.style.display = 'none'; }, 400);
   });
+})();
+
+// ===== お知らせ（利用規約オーバーレイ内の上下2か所に表示） =====
+// 文面はここ1か所だけを書き換える。until を過ぎると自動的に
+// 「現在のお知らせはありません。」に戻るので、消し忘れても古い案内が残らない。
+// お知らせが無い期間は NOTICE = null にする。
+(function() {
+  const NOTICE = {
+    until: new Date('2026-12-16T23:59:59'),
+    // 上の欄（スクロールの外＝常に見える）。#tosBox は overflow:hidden で高さ上限が
+    // ないため、ここは4行程度まで。長文は full 側に書く。
+    short: `<strong style="color:#c53030">🔴 アシアナ航空（OZ）便は2026年12月16日（水）ご搭乗分まで</strong>`
+         + `（ANAとのマイレージ提携終了。詳細は下の利用規約の末尾）`,
+    // 下の欄（利用規約スクロールの末尾＝同意前に必ず通る位置）
+    full: `<strong style="color:#c53030">🔴 ANAマイルでアシアナ航空（OZ）便をご利用予定の方へ</strong><br>`
+        + `ANAとアシアナ航空のマイレージ提携は<strong>2026年12月16日（水）</strong>をもって終了します。<br>`
+        + `・アシアナ便を利用する特典航空券・スターアライアンスアップグレード特典は`
+        + `<strong style="color:#c53030">12月16日（水）ご搭乗分まで</strong>。`
+        + `復路を含め、全行程が12月16日までに収まる日程でご予約ください<br>`
+        + `・<strong>12月17日（木）以降の予約変更・払い戻しはできません</strong><br>`
+        + `・アシアナ便ご搭乗でのANAマイル積算は2026年10月15日ご搭乗分をもって終了しています<br>`
+        + `<span style="font-size:0.72rem;color:#718096">出典：ANA公式「アシアナ航空（OZ）との提携終了について」（2026年8月3日）</span>`
+        + `<br><br><strong>アシアナマイレージクラブにマイルをお持ちの方</strong><br>`
+        + `大韓航空との統合（2026年12月17日）後も、既存のアシアナマイルは10年間そのまま維持されると報じられています。`
+        + `<strong>年内に使い切る必要はありません。</strong>`
+        + `ただしスカイパスへ早期に一括移管した場合、提携サービス・クレジットカードで獲得した分は1:0.82`
+        + `（ご搭乗で獲得した分は1:1）になるとされています。移管後の取り消しはできないため、お急ぎにならず、`
+        + `最新の条件を大韓航空・アシアナ航空の公式案内でご確認ください。`
+  };
+
+  if (!NOTICE || new Date() > NOTICE.until) return;
+  const short = document.getElementById('noticeShort');
+  const full  = document.getElementById('noticeFull');
+  if (short) short.innerHTML = NOTICE.short;
+  if (full)  full.innerHTML  = NOTICE.full;
 })();
 
 // ===== 特定商取引法に基づく表記 =====
