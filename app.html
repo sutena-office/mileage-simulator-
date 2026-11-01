@@ -1243,6 +1243,10 @@
         <h3>第13条（協議解決）</h3>
         <p>本規約に定めのない事項または解釈に疑義が生じた場合は、運営者とユーザーが誠意をもって協議し解決するものとします。</p>
         <p style="margin-top:0.8rem;font-size:0.78rem;color:#a0aec0">以上　制定：2026年6月　お問い合わせ：mile@cospa-labo.com</p>
+        <div id="noticeDetailBox" style="display:none;margin-top:1rem;padding:0.9rem 1rem;background:#ebf8ff;border-left:4px solid #3182ce;border-radius:8px">
+          <div style="font-size:0.8rem;font-weight:700;color:#2b6cb0;margin-bottom:0.5rem">📢 お知らせ</div>
+          <p id="noticeDetail" style="font-size:0.8rem;color:#4a5568;margin:0;line-height:1.7"></p>
+        </div>
       </div>
 
       <div class="tos-scroll-hint" id="tosScrollHint">↓ 最後までスクロールしてください</div>
@@ -3431,10 +3435,16 @@ document.getElementById('searchBtn').addEventListener('click', () => {
   };
 
   if (!NOTICE || new Date() > NOTICE.until) return;
+  // ① 規約オーバーレイの冒頭（スクロール外＝開いた瞬間に見える）
   const short = document.getElementById('noticeShort');
-  const full  = document.getElementById('noticeFull');
   if (short) short.innerHTML = NOTICE.short;
-  if (full)  full.innerHTML  = NOTICE.full;
+  // ② 規約スクロールの末尾（同意前に必ず到達する位置）。期間外は箱ごと出さない
+  const detail = document.getElementById('noticeDetail');
+  const detailBox = document.getElementById('noticeDetailBox');
+  if (detail && detailBox) { detail.innerHTML = NOTICE.full; detailBox.style.display = ''; }
+  // ③ フッターから開く利用規約モーダル内
+  const full = document.getElementById('noticeFull');
+  if (full) full.innerHTML = NOTICE.full;
 })();
 
 // ===== 特定商取引法に基づく表記 =====
